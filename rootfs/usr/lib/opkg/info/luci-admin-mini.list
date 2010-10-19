@@ -1,0 +1,15 @@
+/usr/lib/lua/luci/controller/mini/system.lua
+/usr/lib/lua/luci/controller/mini/index.lua
+/usr/lib/lua/luci/controller/mini/network.lua
+/usr/lib/lua/luci/model/cbi/mini/passwd.lua
+/usr/lib/lua/luci/model/cbi/mini/system.lua
+/usr/lib/lua/luci/model/cbi/mini/index.lua
+/usr/lib/lua/luci/model/cbi/mini/network.lua
+/usr/lib/lua/luci/model/cbi/mini/luci.lua
+/usr/lib/lua/luci/model/cbi/mini/dhcp.lua
+/usr/lib/lua/luci/model/cbi/mini/wifi.lua
+/usr/lib/lua/luci/view/mini/reboot.htm
+/usr/lib/lua/luci/view/mini/applyreboot.htm
+/usr/lib/lua/luci/view/mini/backup.htm
+/usr/lib/lua/luci/view/mini/index.htm
+/usr/lib/lua/luci/view/mini/upgrade.htm

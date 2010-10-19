@@ -1,0 +1,15 @@
+/lib/uci/schema/default/firewall
+/usr/lib/lua/luci/controller/luci_fw/luci_fw.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/redirect.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/rrule.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/trule.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/miniportfw.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/traffic.lua
+/usr/lib/lua/luci/model/cbi/luci_fw/zones.lua
+/usr/lib/lua/luci/i18n/luci-fw.ca.lmo
+/usr/lib/lua/luci/i18n/luci-fw.de.lmo
+/usr/lib/lua/luci/i18n/luci-fw.en.lmo
+/usr/lib/lua/luci/i18n/luci-fw.es.lmo
+/usr/lib/lua/luci/i18n/luci-fw.fr.lmo
+/usr/lib/lua/luci/i18n/luci-fw.pt-br.lmo
+/usr/lib/lua/luci/i18n/luci-fw.pt.lmo

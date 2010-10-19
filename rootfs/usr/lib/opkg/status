@@ -1,0 +1,349 @@
+Package: base-files
+Status: install ok installed
+Root: /
+Conffiles: /etc/banner 9992a68e90a3ad92be496fbb6e7a4645 /etc/hosts 89f616defd47b22702e3158ca7e70487 /etc/inittab b32300b974fdaf89bf58c80a144d6d3a /etc/group 31c4c2ea7b79761476954e66f9d4ed19 /etc/passwd b85ef5a2b789f8cf124ec14246aa9e73 /etc/profile f6394146d2f7dd077ea65916f2854948 /etc/shells 725ba6f40dff0612f61ecd3f171bb3e1 /etc/sysctl.conf 1b05ebb41f72cb84e5510573cd4aca26 /etc/config/system f28636cc753132fe62f0711c01a3a6de
+Version: 43.3-r22711
+Architecture: brcm-2.4
+
+Package: libc
+Status: install ok installed
+Root: /
+Version: 0.9.30.1-43.3
+Architecture: brcm-2.4
+
+Package: libgcc
+Status: install ok installed
+Root: /
+Version: 3.4.6-43.3
+Architecture: brcm-2.4
+
+Package: kmod-diag
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-7
+Architecture: brcm-2.4
+
+Package: kmod-brcm-wl
+Status: install ok installed
+Root: /
+Version: 2.4.37.9+4.150.10.5.3-7
+Architecture: brcm-2.4
+
+Package: kmod-wlcompat
+Status: install ok installed
+Root: /
+Version: 2.4.37.9+4.150.10.5.3-7
+Architecture: brcm-2.4
+
+Package: wlc
+Status: install ok installed
+Root: /
+Version: 4.150.10.5.3-7
+Architecture: brcm-2.4
+
+Package: nas
+Status: install ok installed
+Root: /
+Version: 4.150.10.5.3-7
+Architecture: brcm-2.4
+
+Package: busybox
+Status: install ok installed
+Root: /
+Version: 1.15.3-2
+Architecture: brcm-2.4
+
+Package: dnsmasq
+Status: install ok installed
+Root: /
+Conffiles: /etc/config/dhcp 10ebec35ba073ca26c8c988944646403 /etc/dnsmasq.conf 7cf378e58d3fe5db31f4116a16c15c61
+Version: 2.55-3
+Architecture: brcm-2.4
+
+Package: dropbear
+Status: install ok installed
+Root: /
+Conffiles: /etc/dropbear/dropbear_rsa_host_key d41d8cd98f00b204e9800998ecf8427e /etc/dropbear/dropbear_dss_host_key d41d8cd98f00b204e9800998ecf8427e /etc/config/dropbear caeaaf75aad63d9bf81e4ecaad7a1f98
+Version: 0.52-4
+Architecture: brcm-2.4
+
+Package: luci-core
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-cbi
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-http
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-ipkg
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-lmo
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-nixio
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-uci
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-sys
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-web
+Status: install ok installed
+Root: /
+Conffiles: /etc/config/luci bfda928d073514132910a61221e393a5
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-uvl
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-admin-core
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-admin-mini
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-admin-full
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-app-firewall
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-app-initmgr
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-sgi-cgi
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-theme-base
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-theme-openwrt
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci-i18n-english
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: luci
+Status: install ok installed
+Root: /
+Version: 0.9+svn6240-1
+Architecture: brcm-2.4
+
+Package: firewall
+Status: install ok installed
+Root: /
+Conffiles: /etc/config/firewall c379133b72fef4346715128e4ee97a5c
+Version: 1-12
+Architecture: all
+
+Package: iptables
+Status: install ok installed
+Root: /
+Version: 1.4.6-2
+Architecture: brcm-2.4
+
+Package: iptables-mod-conntrack
+Status: install ok installed
+Root: /
+Version: 1.4.6-2
+Architecture: brcm-2.4
+
+Package: iptables-mod-nat
+Status: install ok installed
+Root: /
+Version: 1.4.6-2
+Architecture: brcm-2.4
+
+Package: libiptc
+Status: install ok installed
+Root: /
+Version: 1.4.6-2
+Architecture: brcm-2.4
+
+Package: libxtables
+Status: install ok installed
+Root: /
+Version: 1.4.6-2
+Architecture: brcm-2.4
+
+Package: kernel
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-ipt-core
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-ipt-conntrack
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-ipt-nat
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-ipt-nathelper
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-ppp
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: kmod-pppoe
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-1
+Architecture: brcm-2.4
+
+Package: liblua
+Status: install ok installed
+Root: /
+Version: 5.1.4-6
+Architecture: brcm-2.4
+
+Package: lua
+Status: install ok installed
+Root: /
+Version: 5.1.4-6
+Architecture: brcm-2.4
+
+Package: mtd
+Status: install ok installed
+Root: /
+Version: 13
+Architecture: brcm-2.4
+
+Package: nvram
+Status: install ok installed
+Root: /
+Version: 7
+Architecture: brcm-2.4
+
+Package: opkg
+Status: install ok installed
+Root: /
+Conffiles: /etc/opkg.conf b3cd5b2681e0f2eb211c6fb9cf7b9c9f
+Version: 513-2
+Architecture: brcm-2.4
+
+Package: ppp
+Status: install ok installed
+Root: /
+Version: 2.4.4-9
+Architecture: brcm-2.4
+
+Package: ppp-mod-pppoe
+Status: install ok installed
+Root: /
+Version: 2.4.4-9
+Architecture: brcm-2.4
+
+Package: kmod-switch
+Status: install ok installed
+Root: /
+Version: 2.4.37.9-3
+Architecture: brcm-2.4
+
+Package: uci
+Status: install ok installed
+Root: /
+Version: 12012009.5-2
+Architecture: brcm-2.4
+
+Package: libuci
+Status: install ok installed
+Root: /
+Version: 12012009.5-2
+Architecture: brcm-2.4
+
+Package: libuci-lua
+Status: install ok installed
+Root: /
+Version: 12012009.5-2
+Architecture: brcm-2.4
+
+Package: uhttpd
+Status: install ok installed
+Root: /
+Conffiles: /etc/config/uhttpd ce987fac4a927ea6eef5045e3b0793cd
+Version: 14
+Architecture: brcm-2.4
+
+Package: wireless-tools
+Status: install ok installed
+Root: /
+Version: 29-4
+Architecture: brcm-2.4
+

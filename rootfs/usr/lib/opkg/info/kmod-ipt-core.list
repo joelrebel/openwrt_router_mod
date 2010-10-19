@@ -1,0 +1,11 @@
+/lib/modules/2.4.37.9/ip_tables.o
+/lib/modules/2.4.37.9/iptable_filter.o
+/lib/modules/2.4.37.9/iptable_mangle.o
+/lib/modules/2.4.37.9/ipt_limit.o
+/lib/modules/2.4.37.9/ipt_mac.o
+/lib/modules/2.4.37.9/ipt_multiport.o
+/lib/modules/2.4.37.9/ipt_comment.o
+/lib/modules/2.4.37.9/ipt_LOG.o
+/lib/modules/2.4.37.9/ipt_TCPMSS.o
+/lib/modules/2.4.37.9/ipt_REJECT.o
+/etc/modules.d/40-ipt-core

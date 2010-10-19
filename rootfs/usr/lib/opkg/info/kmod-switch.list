@@ -1,0 +1,5 @@
+/lib/modules/2.4.37.9/switch-core.o
+/lib/modules/2.4.37.9/switch-adm.o
+/lib/modules/2.4.37.9/switch-robo.o
+/lib/network/switch.sh
+/etc/modules.d/20-switch

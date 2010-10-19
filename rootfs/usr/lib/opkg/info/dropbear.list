@@ -1,0 +1,9 @@
+/usr/sbin/dropbear
+/usr/bin/scp
+/usr/bin/ssh
+/usr/bin/dbclient
+/usr/bin/dropbearkey
+/etc/config/dropbear
+/etc/init.d/dropbear
+/etc/dropbear/dropbear_rsa_host_key
+/etc/dropbear/dropbear_dss_host_key

@@ -1,0 +1,3 @@
+/etc/init.d/nvram
+/usr/sbin/nvram
+/usr/lib/libnvram.so.0.1

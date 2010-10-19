@@ -1,0 +1,4 @@
+/lib/modules/2.4.37.9/ppp_async.o
+/lib/modules/2.4.37.9/ppp_generic.o
+/lib/modules/2.4.37.9/slhc.o
+/etc/modules.d/30-ppp

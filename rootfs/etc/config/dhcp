@@ -1,0 +1,9 @@
+
+config 'dnsmasq'
+	option 'rebind_protection' '1'
+	option 'rebind_localhost' '0'
+	option 'local' '/lan/'
+	option 'domain' 'lan'
+	option 'leasefile' '/tmp/dhcp.leases'
+	option 'resolvfile' '/tmp/resolv.conf.auto'
+

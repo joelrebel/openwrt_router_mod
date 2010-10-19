@@ -1,0 +1,6 @@
+/etc/uci-defaults/luci-i18n-english
+/usr/lib/lua/luci/i18n/default.en.lmo
+/usr/lib/lua/luci/i18n/cbi.en.lmo
+/usr/lib/lua/luci/i18n/admin-core.en.lmo
+/usr/lib/lua/luci/i18n/sysauth.en.lmo
+/usr/lib/lua/luci/i18n/wifi.en.lmo

@@ -1,0 +1,9 @@
+/usr/lib/lua/luci/controller/init.lua
+/usr/lib/lua/luci/model/cbi/init/init.lua
+/usr/lib/lua/luci/i18n/initmgr.ca.lmo
+/usr/lib/lua/luci/i18n/initmgr.de.lmo
+/usr/lib/lua/luci/i18n/initmgr.el.lmo
+/usr/lib/lua/luci/i18n/initmgr.en.lmo
+/usr/lib/lua/luci/i18n/initmgr.es.lmo
+/usr/lib/lua/luci/i18n/initmgr.pt-br.lmo
+/usr/lib/lua/luci/i18n/initmgr.pt.lmo

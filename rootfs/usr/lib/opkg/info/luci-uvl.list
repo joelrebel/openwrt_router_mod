@@ -1,0 +1,14 @@
+/lib/uci/schema/meta/schema
+/usr/lib/lua/luci/uvl/dependencies.lua
+/usr/lib/lua/luci/uvl/validation.lua
+/usr/lib/lua/luci/uvl/errors.lua
+/usr/lib/lua/luci/uvl/datatypes.lua
+/usr/lib/lua/luci/uvl.lua
+/usr/lib/lua/luci/i18n/uvl.ca.lmo
+/usr/lib/lua/luci/i18n/uvl.de.lmo
+/usr/lib/lua/luci/i18n/uvl.en.lmo
+/usr/lib/lua/luci/i18n/uvl.es.lmo
+/usr/lib/lua/luci/i18n/uvl.pt-br.lmo
+/usr/lib/lua/luci/i18n/uvl.pt.lmo
+/usr/bin/uvl
+/usr/bin/uvlc

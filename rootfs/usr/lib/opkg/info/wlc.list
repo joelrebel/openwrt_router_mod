@@ -1,0 +1,3 @@
+/etc/hotplug.d/net/20-broadcom_wds
+/lib/wifi/broadcom.sh
+/sbin/wlc

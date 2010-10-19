@@ -1,0 +1,7 @@
+/lib/modules/2.4.37.9/ip_conntrack_ftp.o
+/lib/modules/2.4.37.9/ip_nat_ftp.o
+/lib/modules/2.4.37.9/ip_conntrack_irc.o
+/lib/modules/2.4.37.9/ip_nat_irc.o
+/lib/modules/2.4.37.9/ip_conntrack_tftp.o
+/lib/modules/2.4.37.9/ip_nat_tftp.o
+/etc/modules.d/45-ipt-nathelper
