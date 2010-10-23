@@ -1,0 +1,87 @@
+
+
+
+check gpio
+if ON
+ 	check router_status
+	if GW
+		then
+		check atom_status
+		if atom reachable
+		then
+			ssh to atom, ensure it is the gatway
+			check if ppp0 is started, if it isnt, then start pp0
+		
+		elif atom unreachable
+		then
+			check and run timer_boot_atom script
+			continue in loop
+
+	if !GW
+		then
+		check atom_status
+		if atom reachable
+		then
+			ssh to atom, ensure it is the gatway
+			check if ppp0 is started
+		if atom unreachable
+		then	
+			check gateway ip
+			if in use
+				then dump error
+				continue in loop
+			else	
+				turn gatway
+				continue in loop
+			fi	
+		fi
+			
+			
+
+if OFF #gpio
+
+
+
+	if GW
+                then
+		kill timer_boot_atom
+                check atom_status
+                if atom reachable
+                then
+			run timer script to halt atom on 10 mins timer_halt_atom
+                        ssh to atom, ppp0 stop run halt
+			continue in loop
+
+                elif atom unreachable
+                then
+		       check gateway ip
+                        if in use
+                                then dump error
+                                continue in loop
+                        else
+                                turn gatway
+                                continue in loop
+                        fi
+	
+
+        if !GW
+                then
+                check atom_status
+                if atom reachable
+                then
+                        run timer script to halt atom on 10 mins timer_halt_atom
+                        ssh to atom, ppp0 stop 
+                        continue in loop
+ 
+                if atom unreachable
+                then
+                        check gateway ip
+                        if in use
+                                then dump error
+                                continue in loop
+                        else
+                                turn gatway
+                                continue in loop
+                        fi
+                fi
+	fi
