@@ -43,14 +43,16 @@ POWER_STATUS='UNKOWN'
 
 
 while [[ 1 ]];
-do
+do	
+	check_mystatus #returns NORMAL|GATEWAY
+
 	ping_check $GATEWAY_IP
 	if [[ $? -eq 1 ]];
 	then
-        	GATEWAY_STATUS=DOWN
+		GATEWAY_STATUS=DOWN
 	elif [[ $? -eq 0 ]];
 	then
-        	GATEWAY_STATUS=UP
+		GATEWAY_STATUS=UP
 	fi
 		
 	ping_check $ATOM_IP
@@ -69,59 +71,62 @@ do
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 		
 		check_mystatus
-		if [[ $? -eq 0 ]]; # Router isnt the gateway
+		if [[ "$MYSTATUS" -eq "NORMAL"]]; # Router isnt the gateway
 		then
 			logline debug "check_mystatus returned MY_STATUS -> $MY_STATUS "
 		
-		if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
-		then
+			if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
+			then
 			
 			
-			logline info "ping_check returned ATOM_IP -> UNREACHABLE"
-			if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
-			then
-				logline debug "ping_check returned GATEWAY_IP -> UNREACHABLE"
-				logline info "Running boot ATOM server timer script"
-				logline info "No gateway is up, changing my ip to gateway"
-				#timer script runs here
-				#turn_gateway called here
+				logline info "ping_check returned ATOM_IP -> UNREACHABLE"
+				if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
+				then
+					logline debug "ping_check returned GATEWAY_IP -> UNREACHABLE"
+					logline info "Running boot ATOM server timer script"
+					logline info "No gateway is up, changing my ip to gateway"
+					#timer script runs here
+					#turn_gateway called here
 
-			elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
-			then
-				logline error "ping_check returned GATEWAY_IP -> REACHABLE"
-				logline error "ATOM isnt up, neither am I the gateway - but someone is! Joel whats changed?!"
-				#break out of this if fi fi fi, continue polling
-			fi
-
-
-		 elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, ensure atom is the gateway - 
-		 then	
+				elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
+				then
+					logline error "ping_check returned GATEWAY_IP -> REACHABLE"
+					logline error "ATOM isnt up, neither am I the gateway - but someone is! Joel whats changed?!"
+					#break out of this if fi fi fi, continue polling
+				fi
 
 
-		 	logline info "ping_check returned ATOM_IP -> REACHABLE"
-			#kill timer scripts
-			#
-			if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
-		        then
-                                 logline error "ping_check returned GATEWAY_IP -> REACHABLE"
-				 #wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
-				 $TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
-				 if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
-				 then
+		 	elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, ensure atom is the gateway - 
+			then	
+
+
+		 		logline info "ping_check returned ATOM_IP -> REACHABLE"
+				#kill timer scripts
+				#
+				if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
+		        	then
+                                	logline error "ping_check returned GATEWAY_IP -> REACHABLE"
+				 	#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
+				 	
+					$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
+				 	if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
+				 	then
 				 	logline info "Atom is the gateway, continuing looping"
 					#check if pppX is up, google is reachable..
 				 else 
 				 	logline error "Atom isnt the gateway, nor am I but someone is.. .. please check, continuing looping.."
 				 fi
-		         elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
-			 then
+		        	
+				elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
+			 	then
 			 	
-				#ssh to atomip
-				# check enable gateway ip, 
-				# start pppoe
-			fi
+					#ssh to atomip
+					# check enable gateway ip, 
+					# start pppoe
+				fi
 			
-		fi #end ATOM_IP reachable	
+			fi #end ATOM_IP reachable	
+	
 	elif [[ $? -eq 1 ]]; #GPIO indicates power is OFF
 	then
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
@@ -130,53 +135,58 @@ do
 		then
 			logline debug "check_mystatus returned MY_STATUS -> $MY_STATUS "
 		
-		if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
-		then
-			
-			logline info "ping_check returned ATOM_IP -> UNREACHABLE"
-			if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
+			if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
 			then
+			
+				logline info "ping_check returned ATOM_IP -> UNREACHABLE"
+				if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
+				then
 								
 
-			elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
-			then
+				elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
+				then
 
 
-			fi
+				fi
 
 
-		 elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, ensure atom is the gateway - 
-		 then	
+		 	elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, ensure atom is the gateway - 
+		 	then	
 
 
-		 	logline info "ping_check returned ATOM_IP -> UNREACHABLE"
-			#kill timer scripts
-			#
-			if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
-		        then
-                                 logline error "ping_check returned GATEWAY_IP -> REACHABLE"
-				 #wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
-				 $TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
-				 if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
-				 then
-				 	logline info "Atom is the gateway, continuing looping"
+		 		logline info "ping_check returned ATOM_IP -> UNREACHABLE"
+				#kill timer scripts
+				#
+				
+				if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
+		        	then
+                                	logline error "ping_check returned GATEWAY_IP -> REACHABLE"
+				 	#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
+				 
+				 	$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
+				 	if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
+				 	then
+				 		logline info "Atom is the gateway, continuing looping"
 					#check if pppX is up, google is reachable..
 					#run halt timer script
-				 else 
-				 	logline error "Atom isnt the gateway, nor am I but someone is.. .. please check, continuing looping.."
-				 fi
-		         elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
-			 then
+					 else 
+				 		logline error "Atom isnt the gateway, nor am I but someone is.. .. please check, continuing looping.."
+				 	fi
+				elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
+			 	then
 			 	
-				#ssh to atomip
-				# enable gateway ip, 
-				# start pppoe
-			fi
+					#ssh to atomip
+					# enable gateway ip, 
+					# start pppoe
+				fi
 			
-		fi #end ATOM_IP reachable	
+			fi #end ATOM_IP reachable	
 
-fi
+	fi #end elif GPIO
+
+
 sleep $LOOP_INTERVAL
+
 done
 
 
@@ -218,7 +228,7 @@ function check_mystatus
 	if [[ $MY_CURRENT_IP -eq $MY_IP ]];
 	then
 		MY_STATUS=NORMAL
-		return 0
+		return 3
 
 	elif [[ $MY_CURRENT_IP -eq $GATEWAY_IP ]];
 	then
@@ -234,7 +244,8 @@ function check_mystatus
 function poll_gpio
 {
 
- POWER_STATUS=$(cat /proc/diag/button/ses)
+ #POWER_STATUS=$(cat /proc/diag/button/ses)
+ POWER_STATUS=$(cat /tmp/diag/button/ses)
  if [[ $POWER_STATUS -eq 0 ]];
  then
  	POWER_STATUS=ON
@@ -281,7 +292,7 @@ function ping_check
 function turn_gateway 
 {
 	echo ">> Turning into gateway "
-	;ifconfig etc etc
+#	;ifconfig etc etc
 
 }
 
@@ -289,7 +300,7 @@ function turn_gateway
                   
 function power_cut
 {	
-	check_status
+	check_mystatus
 	if [[ "$MY_STATUS" -eq "NORMAL" ]];
 	then
 		
