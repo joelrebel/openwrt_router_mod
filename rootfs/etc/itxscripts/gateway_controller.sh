@@ -35,6 +35,7 @@ MY_IP='192.168.0.4'
 MY_STATUS='UNKOWN'
 ATOM_STATUS='UNKOWN'
 POWER_STATUS='UNKOWN'
+GATEWAY_STATUS='UNKOWN'
 
 #POWER_STATUS
 #cat /proc/diag/button/ses  - < AOSS button 
@@ -66,7 +67,8 @@ do
 
 
 	poll_gpio
-	if [[ $? -eq 0 ]]; #GPIO indicates power is ON
+
+	if [[ "$POWER_STATUS" -eq "ON" ]]; #GPIO indicates power is ON
 	then	
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 		
@@ -127,7 +129,7 @@ do
 			
 			fi #end ATOM_IP reachable	
 	
-	elif [[ $? -eq 1 ]]; #GPIO indicates power is OFF
+	elif [[ "$POWER_STATUS" -eq "OFF" ]]; #GPIO indicates power is OFF
 	then
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 		check_mystatus
@@ -342,22 +344,3 @@ function power_cut
 	fi	
  
 }                
-                 
-function power_up
-{
-  check_status
-
-  ping_check $ATOM_IP
-  if [[ $? -eq 1 ]];
-  then
-  	echo ">> $ATOM_IP down / Unreachable"
-  else
-  	
-  fi
-  	
-
-
-}
-
-
-
