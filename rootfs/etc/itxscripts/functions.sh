@@ -1,6 +1,27 @@
+#ned 
 
-function logline # function must be called with  log_line [debug|error] "some message here"
-		  # Timestamp needs to be added for each logline
+LOG_LEVEL='0'
+#log levels are
+# 0 - error logs only
+# 1 - error + debug logs
+# 2 - error + debug  + info logs
+LOOP_INTERVAL=5 # in seconds
+LOG_FILE='gateway_control.log'
+MY_SECONDARY_IP='192.168.0.40'
+ATOM_IP='192.168.0.110'
+GATEWAY_IP='192.168.0.1'
+MY_IP='192.168.0.4'
+MY_STATUS='UNKOWN'
+ATOM_STATUS='UNKOWN'
+POWER_STATUS='UNKOWN'
+GATEWAY_STATUS='UNKOWN'
+POWERCUT_FLAG_COUNT=0;
+POWERCUT_FLAG_MAXCOUNT=11; # $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
+			   # once the script hits maxcount, we run halt	
+
+# function must be called with  log_line [debug|error] "some message here"
+# Timestamp needs to be added for each logline
+function logline 
 {	
 	if [[ $LOG_LEVEL -eq "0" ]];
 	then
@@ -30,9 +51,49 @@ function logline # function must be called with  log_line [debug|error] "some me
 	fi	
 }
 
-function check_mystatus
+function powercut_flag_check 
+{
+	if [[ ! -f .powercut_flag ]];
+	then
+		touch .powercut_flag
+
+	elif [[ -f .powercut_flag ]];
+	
+		if [[ $POWERCUT_FLAG_COUNT -le $POWERCUT_FLAG_MAXCOUNT ]];		
+		then
+			$POWERCUT_FLAG_COUNT=$(( $POWERCUT_FLAG_COUNT + 1 ))
+			return $POWERCUT_FLAG_COUNT #max count not yet reached
+	
+		elif [[ $POWERCUT_FLAG_COUNT -eq $(( $POWERCUT_FLAG_MAXCOUNT+1 )) ]]; #12 * LOOP_INTERVAL = 60 secs/ 1min 
+			return 0 #max count reached
+			
+		fi
+
+	fi
+}
+
+
+function turn_self_gateway 
 {
 
+}
+
+function turn_self_normal
+{
+
+}
+
+function turn_atom_normal
+{
+
+}
+
+function turn_atom_gateway
+{
+
+}
+function check_mystatus
+{
 	MY_CURRENT_IP=$(ifconfig br-lan | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g')
 	if [[ $MY_CURRENT_IP -eq $MY_IP ]];
 	then
@@ -44,9 +105,6 @@ function check_mystatus
 		MY_STATUS=GATEWAY
 		return 2
 	fi
-
-
-
 }
 
 
@@ -97,57 +155,3 @@ function ping_check
 		return 1 #$1 unreachable
 	fi	
 }
-
-function turn_gateway 
-{
-	echo ">> Turning into gateway "
-#	;ifconfig etc etc
-
-}
-
-
-                  
-function power_cut
-{	
-	check_mystatus
-	if [[ "$MY_STATUS" -eq "NORMAL" ]];
-	then
-		
-		ping_check $ATOM_IP
-		if [[ $? -eq 0 ]];
-		then
-			ssh $ATOM_IP -p2222 halt
-			if [ $? -eq 0 ];
-			then 
-				echo ">> Halt ran on $ATOM_IP"
-				
-				while [[ `ping_check $ATOM_IP` -ne 1 ]]; #possible phail
-				do	
-					echo ">> Waiting for $ATOM_IP to halt.."
-				done
-
-				turn_gateway
-
-			else
-				echo ">> ssh failed to $ATOM_IP failed"
-				echo ">> wtf, ssh not running or server hung - stop manually or give me a relay Ill turn it off ;)"
-			fi
-		else
-		#atom is down, lets turn into gateway
-			echo ">> Atom is down.."
-			turn_gateway	
-
-		fi	
-
-	fi
-
-
-	if [[ "$MY_STATUS" -eq "GATEWAY" ]];
-	then
-
-		 
-		
-
-	fi	
- 
-}                
