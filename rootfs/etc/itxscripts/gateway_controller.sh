@@ -31,11 +31,12 @@ LOOP_INTERVAL=5 # in seconds
 WOL_SENT_COUNT=0;
 ATOM_MAC="00:1c:c0:d5:ed:60"
 
-LOG_FILE='gateway_control.log'
 MY_SECONDARY_IP='192.168.0.40'
-ATOM_IP='192.168.0.4'
+ATOM_IP='192.168.0.110'
+ATOM_GATEWAY_INTF='eth1'
+MY_GATEWAY_INTF='wlan0' #brwlan
 GATEWAY_IP='192.168.0.1'
-MY_IP='192.168.0.98'
+MY_IP='192.168.0.4'
 
 MY_STATUS='UNKOWN'
 ATOM_STATUS='UNKOWN'
@@ -125,7 +126,7 @@ do
                                 	logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 				 	#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
 				 	
-					$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
+					$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig $ATOM_GATEWAY_INTF" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
 				 	if [ "$TEMP" == "$GATEWAY_IP" ];
 				 	then
 				 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, ATOM is GATEWAY \0/"

@@ -1,22 +1,7 @@
 #!/bin/bash
 #ned 
 set -x
-LOG_LEVEL='2'
-#log levels are
-# 0 - error logs only
-# 1 - error + debug logs
-# 2 - error + debug  + info logs
-LOOP_INTERVAL=5 # in seconds
-LOG_FILE='gateway_control.log'
-MY_SECONDARY_IP='192.168.0.40'
-ATOM_IP='192.168.0.110'
-GATEWAY_IP='192.168.0.1'
-MY_IP='192.168.0.98'
-INTF='wlan0'
-MY_STATUS='UNKOWN'
-ATOM_STATUS='UNKOWN'
-POWER_STATUS='UNKOWN'
-GATEWAY_STATUS='UNKOWN'
+
 POWERCUT_FLAG_COUNT=0;
 POWERCUT_FLAG_MAXCOUNT=11; # $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
 			   # once the script hits maxcount, we run halt	
@@ -44,7 +29,7 @@ function logline
 	
 	if [[ $LOG_LEVEL -eq "2" ]];
 	then
-		if [ "$1" -eq "info" ] ;
+		if [ "$1" == "info" ] ;
 		then	
 			echo "info: $2" 
 			echo "error: $2" 
@@ -99,7 +84,7 @@ function turn_self_normal
 
 function check_mystatus
 {
-	MY_CURRENT_IP=$(ifconfig $INTF | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g')
+	MY_CURRENT_IP=$(ifconfig $MY_GATEWAY_INTERFACE | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g')
 	logline info  "MY_CURRENT_IP -> $MY_CURRENT_IP, MY_IP -> $MY_IP" 
 	if [ "$MY_CURRENT_IP" ==  $MY_IP ];
 	then
