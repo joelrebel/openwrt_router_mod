@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #router should be hooked to the invertor
 #GPIO input pin should be hooked to a high when theres power.
 #GPIO input pin should be monitored for powercuts..
@@ -21,8 +22,8 @@
 #       3) turn self into gateway
 #
 #router will have secondary ip with  br-lan:1 
-LOG_LEVEL='0' 
 #log levels are
+#LOG_LEVEL='2' 
 # 0 - error logs only
 # 1 - error + debug logs
 # 2 - error + debug  + info logs
@@ -32,16 +33,16 @@ ATOM_MAC="00:1c:c0:d5:ed:60"
 
 LOG_FILE='gateway_control.log'
 MY_SECONDARY_IP='192.168.0.40'
-ATOM_IP='192.168.0.110'
+ATOM_IP='192.168.0.4'
 GATEWAY_IP='192.168.0.1'
-MY_IP='192.168.0.4'
+MY_IP='192.168.0.98'
 
 MY_STATUS='UNKOWN'
 ATOM_STATUS='UNKOWN'
 POWER_STATUS='UNKOWN'
 GATEWAY_STATUS='UNKOWN'
 
-
+source functions.sh
 #POWER_STATUS
 #cat /proc/diag/button/ses  - < AOSS button 
 # 0 = MAINS_ON
@@ -51,7 +52,8 @@ GATEWAY_STATUS='UNKOWN'
 while [[ 1 ]];
 do	
 	check_mystatus #returns NORMAL|GATEWAY
-	if [[ "$MY_STATUS" -eq "NORMAL" ]];
+	logline debug "MY_STATUS-> $MY_STATUS"
+	if [ "$MY_STATUS" == "NORMAL" ];
 	then
 		ping_check $GATEWAY_IP
 		if [[ $? -eq 1 ]];
@@ -61,7 +63,7 @@ do
 		then
 			GATEWAY_STATUS=UP
 		fi
-	elif [[ "$MY_STATUS" -eq "GATEWAY" ]];
+	elif [ "$MY_STATUS" == "GATEWAY" ];
 	then
 		GATEWAY_STATUS=UP
 	fi
@@ -77,20 +79,20 @@ do
 
 
 	poll_gpio
-	if [[ "$POWER_STATUS" -eq "ON" ]]; #GPIO indicates power is ON
+	if [ "$POWER_STATUS" == "ON" ]; #GPIO indicates power is ON
 	then	
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 		POWERCUT_FLAG_COUNT=0; # since power is present, resetting flag to 0	
 
-		if [[ "$MYSTATUS" -eq "NORMAL"]]; # Router isnt the gateway and power is present we need to ensure atom is gateway
+		if [ "$MYSTATUS" == "NORMAL" ]; # Router isnt the gateway and power is present we need to ensure atom is gateway
 		then
 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS "
 		
-			if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
+			if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, server down
 			then
 			
 				logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
-				if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
+				if [ "$GATEWAY_STATUS" == "DOWN" ]; # NO one is using the gateway IP
 				then
 					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 					logline info "Running wol on $ATOM_IP"
@@ -104,7 +106,7 @@ do
 						logline error "WOL_SENT_COUNT -> 15, something wrong with the ATOM Server??"
 					fi	
 
-				elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
+				elif [ "$GATEWAY_STATUS" == "UP" ]; # unkown on gateway ip
 				then
 					logline error "ping_check returned GATEWAY_IP -> REACHABLE"
 					logline error "POWER_STATUS -> $POWER_STATUS, MYSTATUS -> $MYSTATUS, ATOM_STATUS -> $ATOM_STATUS - but GATEWAY_STATUS -> $GATEWAY_STATUS :S"
@@ -113,18 +115,18 @@ do
 				fi
 
 			####end ATOM_STATUS DOWN
-		 	elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, ensure atom is the gateway - 
+		 	elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP reachable, ensure atom is the gateway - 
 			then	
 
 
 		 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
-				if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
+				if [ "$GATEWAY_STATUS" == "UP" ]; # 
 		        	then
                                 	logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 				 	#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
 				 	
 					$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )	
-				 	if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
+				 	if [ "$TEMP" == "$GATEWAY_IP" ];
 				 	then
 				 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, ATOM is GATEWAY \0/"
 					 else 
@@ -133,7 +135,7 @@ do
 						#continue looping
 				 	fi
 		        	
-				elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
+				elif [ "$GATEWAY_STATUS" == "DOWN" ];
 			 	then
 			 		
 					logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, Turning atom into gateway .."
@@ -142,10 +144,10 @@ do
 			
 			fi #end ATOM_STATUS UP
 		
-		elif [[ "$MYSTATUS" -eq "GATEWAY"]]; #Power is present, router is the gateway - we need to check and turn atom into the gateway
+		elif [ "$MYSTATUS" == "GATEWAY" ]; #Power is present, router is the gateway - we need to check and turn atom into the gateway
 		then	
 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS"
-			if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, 
+			if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, 
 			then
 			
 				logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
@@ -161,7 +163,7 @@ do
 				fi	
 
 			#end ATOM_STATUS DOWN
-		 	elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP UP, ensure atom is the gateway - 
+		 	elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP UP, ensure atom is the gateway - 
 			then	
 
 		 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
@@ -174,7 +176,7 @@ do
 
 ################################POWER OFF###############################################
 
-	elif [[ "$POWER_STATUS" -eq "OFF" ]]; #GPIO indicates power is OFF
+	elif [ "$POWER_STATUS" == "OFF" ]; #GPIO indicates power is OFF
 	then
 		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 
@@ -183,20 +185,20 @@ do
 		if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
 		then
 			
-			if [[ "$MYSTATUS" -eq "NORMAL"]]; # IM not the gateway
+			if [ "$MYSTATUS" == "NORMAL" ]; # IM not the gateway
 			then
 				logline info "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS"
 			
-				if [[ "$ATOM_STATUS" -eq "DOWN" ]]; # ATOM_IP is down, server down
+				if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, server down
 				then
 		###TBC	
-					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
-					if [[ "$GATEWAY_STATUS" -eq "DOWN" ]]; # NO one is using the gateway IP
+					logline info "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+					if [ "$GATEWAY_STATUS" == "DOWN" ]; # NO one is using the gateway IP
 					then
 							#ideal position
 							turn_self_gateway
 
-					elif [[ "$GATEWAY_STATUS" -eq "UP" ]]; # unkown on gateway ip
+					elif [ "$GATEWAY_STATUS" == "UP" ]; # unkown on gateway ip
 					then
 
 						#atom is down, Im not the gateway..
@@ -205,55 +207,50 @@ do
 
 					fi
 
-		 		elif [[ "$ATOM_STATUS" -eq "UP" ]]; #ATOM_IP reachable, need to turn it off
+		 		elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP reachable, need to turn it off
 		 		then	
 
 		 			logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 				
-					if [[ "$GATEWAY_STATUS" -eq "UP" ]]; # 
+					turn_atom_normal poweroff
+					if [ "$GATEWAY_STATUS" == "UP" ]; # 
 		        		then
                                 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
-				 		
 						#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
-				 		$TEMP=$(ssh $ATOM_IP -p2222 "ifconfig eth0" | awk -F ':' '/inet addr/{print $2}' | sed -e 's/Bcast//g' )
-
-				 	        if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
-                                        	then
-                                                	logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, ATOM is GATEWAY \0/"
-                                        	 else   
-                                                	logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, ATOM is NOT the GATEWAY :S"
-                                                	#do nothing,
-                                                	#continue looping
-                                        	fi
 	
-						if [[ "$TEMP" -eq "$GATEWAY_IP" ]];
-				 		then
-				 			logline info "Atom is the gateway, changing ip on atom.. "
-							turn_gateway
-							#continue looping
-					 	else 
-				 			logline error "Atom isnt the gateway, nor am I but someone is.. .. please check, continuing looping.."
-							#continue looping
-				 		fi
-				
-					elif [[ "$GATEWAY_STATUS" -eq "DOWN" ]];
+					elif [ "$GATEWAY_STATUS" == "DOWN" ];
 			 		then
-			 			turn_gateway
+			 			turn_self_gateway
 					fi
 			
 				fi #end ATOM_IP reachable
 
-		elif [[ $POWERCUT_FLAG_COUNT -ne $POWERCUT_FLAG_MAXCOUNT ]]; #POWERCUT_FLAG_MAXCOUNT not hit, hence we just ensure someone is the gateway and continue looping
-			then
-				
+			elif [ "$MYSTATUS" == "GATEWAY" ]; #Power is out, need to ensure atom is down
+			then	
+				logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS"
+				if [ "$ATOM_STATUS" == "DOWN" ]; #  
+				then
+			
+					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 
+		 		elif [ "$ATOM_STATUS" == "UP" ]; 
+				then	
+
+			 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+					turn_atom_normal poweroff
+				fi	
+			fi 
+
+		fi # end if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]
+#		elif [[ $POWERCUT_FLAG_COUNT -ne $POWERCUT_FLAG_MAXCOUNT ]]; #POWERCUT_FLAG_MAXCOUNT not hit, hence we just ensure someone is the gateway and continue looping
+#		then
 				
-					
+				
+#		fi 
+		
 	fi #end elif GPIO
 
-
-sleep $LOOP_INTERVAL
-
-done
+	sleep $LOOP_INTERVAL
+done #end main loop
 
 
