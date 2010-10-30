@@ -191,7 +191,6 @@ do
 			
 				if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, server down
 				then
-		###TBC	
 					logline info "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					if [ "$GATEWAY_STATUS" == "DOWN" ]; # NO one is using the gateway IP
 					then
@@ -213,7 +212,7 @@ do
 		 			logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 				
 					turn_atom_normal poweroff
-				    	   
+				 ####TBC#####   	   
 					ping_check $GATEWAY_IP
 			                if [ "$STATUS" == "DOWN" ];
                 			then
