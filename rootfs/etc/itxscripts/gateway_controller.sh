@@ -46,17 +46,18 @@ ATOM_GATEWAY_INTF='eth0:1'
 GATEWAY_IP='192.168.0.1'
 
 POWERCUT_FLAG_COUNT=0;
-POWERCUT_FLAG_MAXCOUNT=3; #36 -default $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
+POWERCUT_FLAG_MAXCOUNT=36; #36 -default $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
 			   # once the script hits maxcount, we run halt	
 
 POWERRESUME_FLAG_COUNT=0;
-POWERRESUME_FLAG_MAXCOUNT=3; #60 -default
+POWERRESUME_FLAG_MAXCOUNT=60; #60 -default
 
 MY_STATUS='UNKOWN'
 ATOM_STATUS='UNKOWN'
 POWER_STATUS='UNKOWN'
 GATEWAY_STATUS='UNKOWN'
 . /etc/itxscripts/functions.sh
+mkdir -p /root/.ssh/
 cp  /etc/itxscripts/known_hosts /root/.ssh/
 
 while [[ 1 ]];

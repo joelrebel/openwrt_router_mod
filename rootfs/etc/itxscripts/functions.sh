@@ -135,6 +135,7 @@ turn_self_normal() {
 	fi
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
 	ifconfig  $MY_SECONDARY_INTF down
+	MY_STATUS=NORMAL
 	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
 }
 
