@@ -23,6 +23,9 @@
 #
 #router will have secondary ip with  br-lan:1 
 #log levels are
+#TOFIX -- doesnt takeover when theres no power and the router has booted, atom is down
+#only takes over if there is power..
+
 export HOME=/root #added for dropbears scp
 
 LOG_LEVEL='0' 
@@ -209,9 +212,7 @@ do
 		powercut_flag_check
 		POWERRESUME_FLAG_COUNT=0;
 		logline debug "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT"
-		if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
-		then
-			
+		
 			if [ "$MY_STATUS" == "NORMAL" ]; # IM not the gateway
 			then
 				logline debug "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS"
@@ -237,19 +238,22 @@ do
 		 		then	
 
 		 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
-				
-					turn_atom_normal poweroff
-				 ####TBC#####   	   
-					if [ "$GATEWAY_STATUS" == "UP" ]; # 
-		        		then
-                                		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
-						#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
+					if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
+					then
 	
-					elif [ "$GATEWAY_STATUS" == "DOWN" ];
-			 		then
-			 			turn_self_gateway
+						turn_atom_normal poweroff
+						if [ "$GATEWAY_STATUS" == "UP" ]; # 
+		        			then
+                                			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
+	
+						elif [ "$GATEWAY_STATUS" == "DOWN" ];
+			 			then
+			 				turn_self_gateway
+						fi
+					else
+						logline info "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT needs to hit $POWERCUT_FLAG_MAXCOUNT"	
+
 					fi
-			
 				fi #end ATOM_IP reachable
 
 			elif [ "$MY_STATUS" == "GATEWAY" ]; #Power is out, need to ensure atom is down
@@ -268,11 +272,8 @@ do
 				fi	
 			fi 
 
-		fi # end if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]
 #		elif [[ $POWERCUT_FLAG_COUNT -ne $POWERCUT_FLAG_MAXCOUNT ]]; #POWERCUT_FLAG_MAXCOUNT not hit, hence we just ensure someone is the gateway and continue looping
 #		then
-				
-				
 #		fi 
 		
 	fi #end elif GPIO
