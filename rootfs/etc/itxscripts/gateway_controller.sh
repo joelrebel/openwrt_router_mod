@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -x
+#set -x
 #router should be hooked to the invertor
 #GPIO input pin should be hooked to a high when theres power.
 #GPIO input pin should be monitored for powercuts..

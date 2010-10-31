@@ -1,6 +1,6 @@
 #!/bin/bash
 #ned 
-set -x
+#set -x
 
 # function must be called with  log_line [debug|error] "some message here"
 # Timestamp needs to be added for each logline
