@@ -23,7 +23,7 @@
 #
 #router will have secondary ip with  br-lan:1 
 #log levels are
-export HOME=/root
+export HOME=/root #added for dropbears scp
 
 LOG_LEVEL='0' 
 LOG_FILE=/etc/itxscripts/gateway_controller.log
@@ -91,7 +91,7 @@ do
 	poll_gpio
 	if [ "$POWER_STATUS" == "ON" ]; #GPIO indicates power is ON
 	then	
-		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
+		logline info "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 		powerresume_flag_check
 		POWERCUT_FLAG_COUNT=0; # since power is present, resetting flag to 0	
 		if [ "$MY_STATUS" == "NORMAL" ]; # Router isnt the gateway and power is present we need to ensure atom is gateway
@@ -101,7 +101,7 @@ do
 				if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, server down
 				then
 			
-					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					if [ "$GATEWAY_STATUS" == "DOWN" ]; # NO one is using the gateway IP
 					then
 						logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
@@ -117,7 +117,7 @@ do
 								logline error "WOL_SENT_COUNT -> 15, something wrong with the ATOM Server??"
 							fi
 						else
-							logline info "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
+							logline debug "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 							turn_self_gateway
 
 					
@@ -136,10 +136,10 @@ do
 				then	
 					
 					
-		 			logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+		 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					if [ "$GATEWAY_STATUS" == "UP" ]; # 
 		        		then
-                                		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
+                                		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 						#Hit two bugs at this point 
 						#- piping|redirecting  dropbear ssh output just doesnt work in non-interactive env
 						#- dropbear scp doesnt seem to honour ssh options like scp -P2222 -oStrictHostKeyChecking=no   root@192.168.0.133:/tmp/test1234 .
@@ -171,10 +171,10 @@ do
 				if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, 
 				then
 			
-					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 					then		
-						logline info "Running /usr/bin/wol on $ATOM_IP"
+						logline debug "Running /usr/bin/wol on $ATOM_IP"
 
 						/usr/bin/wol -i 192.168.0.255 $ATOM_MAC
 						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
@@ -191,7 +191,7 @@ do
 		 		elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP UP, ensure atom is the gateway - 
 				then	
 
-		 				logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+		 				logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 						turn_self_normal
 						turn_atom_gateway
 			
@@ -203,21 +203,21 @@ do
 
 	elif [ "$POWER_STATUS" == "OFF" ]; #GPIO indicates power is OFF
 	then
-		logline debug "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
+		logline info "poll_gpio returned POWER_STATUS -> $POWER_STATUS"
 
 		powercut_flag_check
 		POWERRESUME_FLAG_COUNT=0;
-		logline info "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT"
+		logline debug "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT"
 		if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
 		then
 			
 			if [ "$MY_STATUS" == "NORMAL" ]; # IM not the gateway
 			then
-				logline info "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS"
+				logline debug "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS"
 			
 				if [ "$ATOM_STATUS" == "DOWN" ]; # ATOM_IP is down, server down
 				then
-					logline info "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+					logline debug "POWER_STATUS -> $POWER_STATUS, POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					if [ "$GATEWAY_STATUS" == "DOWN" ]; # NO one is using the gateway IP
 					then
 							#ideal position
@@ -235,13 +235,13 @@ do
 		 		elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP reachable, need to turn it off
 		 		then	
 
-		 			logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+		 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 				
 					turn_atom_normal poweroff
 				 ####TBC#####   	   
 					if [ "$GATEWAY_STATUS" == "UP" ]; # 
 		        		then
-                                		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
+                                		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
 						#wrong to take for granted atom would be the gateway, could do better here - figure mac etc..
 	
 					elif [ "$GATEWAY_STATUS" == "DOWN" ];
@@ -262,7 +262,7 @@ do
 		 		elif [ "$ATOM_STATUS" == "UP" ]; 
 				then	
 
-			 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
+			 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 					turn_atom_normal poweroff
 				fi	
 			fi 

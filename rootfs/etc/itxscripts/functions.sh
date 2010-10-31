@@ -102,6 +102,7 @@ turn_atom_gateway() {
 	then
 		echo "WTF MY_STATUS -> $MY_STATUS, im not letting a splitbrain!" 
 	else 
+		PPP_PID=''
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "ifconfig $ATOM_GATEWAY_INTF $GATEWAY_IP;"
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222  "/bin/bash /opt/server_scripts/iptables"
 		checkrun_atom_ppp
@@ -190,7 +191,7 @@ ping_check() {
 
 	while [[ $COUNT -ne 5 ]]
 	do	
-		/usr/bin/arping -c1 $TO_PING -w2 -I $MY_GATEWAY_INTF
+		/usr/bin/arping -c1 $TO_PING -w2 -I $MY_GATEWAY_INTF &>/dev/null
 		# returns 1 if sucess,
 		# returns 0 if fail
 		
