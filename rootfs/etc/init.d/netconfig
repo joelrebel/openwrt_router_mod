@@ -229,7 +229,7 @@ start() {
 		p("ifname", "lan_ifname")
 		p("macaddr", "lan_macaddr")
 		print "	option proto	static"
-		print "	option ipaddr	192.168.0.100"
+		print "	option ipaddr	192.168.0.4"
 		print "	option netmask	255.255.255.0"
 		print ""
 		print ""
