@@ -112,7 +112,6 @@ do
 						/usr/bin/wol -i 192.168.0.255 $ATOM_MAC
 						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 						logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
-						
 						if [[ $WOL_SENT_COUNT -eq 15 ]];
 						then
 							logline error "WOL_SENT_COUNT -> 15, something wrong with the ATOM Server??"
@@ -166,16 +165,12 @@ do
 				logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 		
 				if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
-				then		
+				then	
+					POWERRESUME_FLAG_COUNT=0		
 					logline debug "Running /usr/bin/wol on $ATOM_IP"
 					/usr/bin/wol -i 192.168.0.255 $ATOM_MAC
 					WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
-	
-					if [[ $WOL_SENT_COUNT -eq 15 ]];
-					then
-						logline error "WOL_SENT_COUNT -> 15, something wrong with the ATOM Server??"
-					fi
 				else
 					logline info "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 					
@@ -183,6 +178,7 @@ do
 				#end ATOM_STATUS DOWN
 		 	elif [ "$ATOM_STATUS" == "UP" ]; #ATOM_IP UP, ensure atom is the gateway - 
 			then	
+				POWERRESUME_FLAG_COUNT=0
 		 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 				turn_self_normal
 				turn_atom_gateway
@@ -216,7 +212,8 @@ do
 
 	 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
-				then
+				then	
+					POWERCUT_FLAG_COUNT=0
 					turn_atom_normal poweroff
 					if [ "$GATEWAY_STATUS" == "UP" ]; # 
 	        			then
@@ -244,7 +241,13 @@ do
 	 		elif [ "$ATOM_STATUS" == "UP" ]; 
 			then	
 		 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
-				turn_atom_normal poweroff
+				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
+				then
+					POWERCUT_FLAG_COUNT=0
+					turn_atom_normal poweroff
+				else
+					logline info "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT needs to hit $POWERCUT_FLAG_MAXCOUNT"	
+				fi	
 			fi	
 		fi 
 fi #end elif GPIO
