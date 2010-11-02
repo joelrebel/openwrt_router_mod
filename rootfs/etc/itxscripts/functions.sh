@@ -57,7 +57,6 @@ turn_atom_normal() {
 	logline info "->turn_atom_normal<-"
 	PPP_PID=''
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $ATOM_GATEWAY_INTF down"
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222  "/sbin/iptables -F;/sbin/iptables -t nat -F;/sbin/iptables -t mangle -F"
 	if [ "$1" == "poweroff" ];
 	then
 		turn_atom_off
@@ -71,8 +70,8 @@ turn_atom_gateway() {
 	else 
 		logline info "->turn_atom_gateway<-"
 		PPP_PID=''
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "ifconfig $ATOM_GATEWAY_INTF $GATEWAY_IP;"
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222  "/bin/bash /opt/server_scripts/iptables"
+		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "ifconfig $ATOM_GATEWAY_INTF $GATEWAY_IP"
+		sleep 5
 		checkrun_atom_ppp
 	fi	
 }

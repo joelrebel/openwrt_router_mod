@@ -21,6 +21,7 @@
 #       3) turn self into gateway
 #
 #router will have secondary ip with  br-lan:1 
+#TOFIX - POWERRESUME_FLAG_COUNT needs to be reset at proper times
 
 export HOME=/root #added for dropbears scp
 
@@ -107,7 +108,8 @@ do
 					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 		
 					if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
-					then
+					then	
+						POWERRESUME_FLAG_COUNT=0
 						logline info "Running /usr/bin/wol on $ATOM_IP"
 						/usr/bin/wol -i 192.168.0.255 $ATOM_MAC
 						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
