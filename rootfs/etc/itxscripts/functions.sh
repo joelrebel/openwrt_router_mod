@@ -2,43 +2,7 @@
 #ned 
 #set -x
 
-# function must be called with  log_line [debug|error] "some message here"
 # Timestamp needs to be added for each logline
-logline() { 
-	if [[ $LOG_LEVEL -eq "0" ]];
-	then
-		if [ "$1" == "error" ];
-		then
-			echo "error: $2" >> $LOG_FILE
-		fi
-	fi
-	
-	if [[ $LOG_LEVEL -eq "1" ]];
-	then
-		if   [ "$1" == "debug" ]; 
-		then
-			echo "debug: $2"  >> $LOG_FILE
-		elif [ "$1" == "error" ];
-		then
-			echo "error: $2"  >> $LOG_FILE
-		fi
-	fi
-	
-	if [[ $LOG_LEVEL -eq "2" ]];
-	then
-		if [ "$1" == "info" ];
-		then	
-			echo "info: $2"  >> $LOG_FILE
-		elif [ "$1" == "error" ];
-		then
-			echo "error: $2"  >> $LOG_FILE
-		elif [ "$1" == "debug" ];
-		then
-			echo "debug: $2" >> $LOG_FILE
-		fi
-	fi	
-}
-
 powerresume_flag_check() {
 		
 		if [[ $POWERRESUME_FLAG_COUNT -lt $POWERRESUME_FLAG_MAXCOUNT ]];		
@@ -70,6 +34,7 @@ powercut_flag_check() {
 checkrun_atom_ppp() {
 	if [ ! $PPP_PID ];
 	then
+		logline info "->running pppoe start on atom<-"
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "pidof pppd >/tmp/pppoe.pid"
 		/usr/bin/scp -P2222 -i /etc/itxscripts/id_rsa root@${ATOM_IP}:/tmp/pppoe.pid /tmp/pppoe.pid
 		PPP_PID=$(cat /tmp/pppoe.pid)
@@ -77,10 +42,11 @@ checkrun_atom_ppp() {
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "nohup /usr/sbin/pppoe-start"
 
 	else 
-		echo "pppd active at $PPP_PID on ${ATOM_IP}"
+		logline info "pppd active at $PPP_PID on ${ATOM_IP}"
 	fi	
 }
 turn_atom_off() {
+	logline info "->turn_atom_off<-"
 	PPP_PID=''
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/sbin/halt"
 }
@@ -88,6 +54,7 @@ turn_atom_off() {
 #confusing name for the fucntion :s
 
 turn_atom_normal() {
+	logline info "->turn_atom_normal<-"
 	PPP_PID=''
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $ATOM_GATEWAY_INTF down"
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222  "/sbin/iptables -F;/sbin/iptables -t nat -F;/sbin/iptables -t mangle -F"
@@ -100,8 +67,9 @@ turn_atom_normal() {
 turn_atom_gateway() {
 	if [ "$MY_STATUS" == "GATEWAY" ];
 	then
-		echo "WTF MY_STATUS -> $MY_STATUS, im not letting a splitbrain!" 
+		logline error "WTF MY_STATUS -> $MY_STATUS, im not letting a splitbrain!" 
 	else 
+		logline info "->turn_atom_gateway<-"
 		PPP_PID=''
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "ifconfig $ATOM_GATEWAY_INTF $GATEWAY_IP;"
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222  "/bin/bash /opt/server_scripts/iptables"
@@ -113,7 +81,7 @@ turn_atom_gateway() {
 #br-lan turns 192.168.0.1
 #br-lan:1 turns 192.168.0.4
 turn_self_gateway() { 
-	echo "->turn_self_gateway<-"
+	logline info "->turn_self_gateway<-"
 
 	ifconfig $MY_GATEWAY_INTF $GATEWAY_IP up
 	ifconfig $MY_SECONDARY_INTF $MY_IP up
@@ -127,7 +95,7 @@ turn_self_gateway() {
 
 turn_self_normal() {
 	
-	echo "->turn_self_normal<-"
+	logline info "->turn_self_normal<-"
 	MYPPP_PID=$(pidof pppd)
 	if [ $MYPPP_PID ];
 	then
@@ -166,6 +134,7 @@ poll_gpio() {
  	if [[ $DIAG_LED -eq 1 ]];
 	then
 		echo 0 >/proc/diag/led/diag
+		logline info "POWER_STATUS=ON"
 	fi
  	POWER_STATUS=ON
 	return 0
@@ -176,6 +145,7 @@ poll_gpio() {
  	if [[ $DIAG_LED -eq 0 ]];
 	then
 		echo 1 >/proc/diag/led/diag
+		logline info "POWER_STATUS=OFF"
 	fi	
  	POWER_STATUS=OFF
 	return 1
@@ -207,9 +177,48 @@ ping_check() {
 	if [[ $PING_COUNT -ge 3 ]];
 	then	
 		STATUS=UP
+		logline info "$TO_PING -> reachable"
 		return 0 #$1 reachable
 	else
-		STATUS=DOWN	
+		STATUS=DOWN
+		logline info "$TO_PING -> UNreachable"
 		return 1 #$1 unreachable
 	fi	
 }
+
+logline() { 
+	if [[ $LOG_LEVEL -eq "0" ]];
+	then
+		if [ "$1" == "error" ];
+		then
+			echo "error: $2" >> $LOG_FILE
+		fi
+	fi
+	
+	if [[ $LOG_LEVEL -eq "1" ]];
+	then	
+		if [ "$1" == "info" ];
+		then	
+			echo "info: $2"  >> $LOG_FILE
+		elif [ "$1" == "error" ];
+		then
+			echo "error: $2"  >> $LOG_FILE
+		fi
+	fi
+	
+	if [[ $LOG_LEVEL -eq "2" ]];
+	then
+		if [ "$1" == "info" ];
+		then
+			echo "info: $2"  >> $LOG_FILE
+		elif [ "$1" == "error" ];
+		then
+			echo "error: $2"  >> $LOG_FILE
+		elif [ "$1" == "debug" ];
+		then
+			echo "debug: $2" >> $LOG_FILE
+		fi
+	fi	
+}
+
+
