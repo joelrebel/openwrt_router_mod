@@ -174,6 +174,7 @@ do
 					WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
 				else
+					check_run_pppd
 					logline info "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 					
 	 		   	fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];

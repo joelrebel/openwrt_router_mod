@@ -79,6 +79,19 @@ turn_atom_gateway() {
 #IPs are swapped between interfaces
 #br-lan turns 192.168.0.1
 #br-lan:1 turns 192.168.0.4
+check_run_pppd() {
+
+	PPID=$(pidof pppd)
+	if [ ! $PPID ];
+	then	
+
+		logline into "->pppd connect<-"
+	 	/usr/sbin/pppd plugin rp-pppoe.so br-lan noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user slrebello password sallu199 lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
+
+	fi
+
+}
+
 turn_self_gateway() { 
 
 	logline info "->turn_self_gateway<-"
@@ -99,17 +112,7 @@ turn_self_gateway() {
 
 }
 
-check_run_pppd() {
 
-	PPID=$(pidof pppd)
-	if [ ! $PPID ];
-	then	
-
-	 	/usr/sbin/pppd plugin rp-pppoe.so br-lan noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user slrebello password sallu199 lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
-
-	fi
-
-}
 
 turn_self_normal() {
 	
