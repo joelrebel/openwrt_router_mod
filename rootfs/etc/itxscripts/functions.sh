@@ -141,11 +141,21 @@ check_mystatus() {
 	if [ "$MY_CURRENT_IP" ==  "$MY_IP" ];
 	then
 		MY_STATUS=NORMAL
+		SES_LED=$(cat /proc/diag/led/ses)
+ 		if [[ $SES_LED -eq 1 ]];
+		then
+			echo 0 >/proc/diag/led/ses
+		fi
 		return 3
 
 	elif [ "$MY_CURRENT_IP" ==  "$GATEWAY_IP" ];
 	then
 		MY_STATUS=GATEWAY
+		SES_LED=$(cat /proc/diag/led/ses)
+ 		if [[ $SES_LED -eq 0 ]];
+		then
+			echo 1 >/proc/diag/led/ses
+		fi
 		return 2
 	fi
 }
