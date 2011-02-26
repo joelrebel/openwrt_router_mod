@@ -48,7 +48,7 @@ checkrun_atom_ppp() {
 turn_atom_off() {
 	logline info "->turn_atom_off<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/sbin/halt"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/opt/server_scripts/do_hibernate.sh"
 }
 
 #confusing name for the fucntion :s
@@ -80,15 +80,34 @@ turn_atom_gateway() {
 #br-lan turns 192.168.0.1
 #br-lan:1 turns 192.168.0.4
 turn_self_gateway() { 
+
 	logline info "->turn_self_gateway<-"
 
 	ifconfig $MY_GATEWAY_INTF $GATEWAY_IP up
 	ifconfig $MY_SECONDARY_INTF $MY_IP up
+	check_run_pppd	
 
-	>/etc/itxscripts/pppd.log
-	/usr/sbin/pppd plugin rp-pppoe.so br-lan noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user slrebello password sallu199 lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
 	echo -e 'nameserver 208.67.220.220\nnameserver 8.8.8.8' >/etc/resolv.conf	
+		
 	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
+	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.66 -j MASQUERADE
+	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.88 -j MASQUERADE
+
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
+
+}
+
+check_run_pppd() {
+
+	PPID=$(pidof pppd)
+	if [ ! $PPID ];
+	then	
+
+	 	/usr/sbin/pppd plugin rp-pppoe.so br-lan noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user slrebello password sallu199 lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
+
+	fi
 
 }
 
@@ -103,7 +122,15 @@ turn_self_normal() {
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
 	ifconfig  $MY_SECONDARY_INTF down
 	MY_STATUS=NORMAL
+
 	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
+	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.66 -j MASQUERADE
+	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.88 -j MASQUERADE
+
+
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
 }
 
 

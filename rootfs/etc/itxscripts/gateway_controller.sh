@@ -239,6 +239,13 @@ do
 			
 			if [ "$ATOM_STATUS" == "DOWN" ]; #  
 			then
+
+				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
+                                then
+                                        POWERCUT_FLAG_COUNT=0
+                                        turn_atom_normal poweroff
+	                                check_run_pppd
+				fi
 				logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, ATOM_STATUS -> $ATOM_STATUS"
 	 		elif [ "$ATOM_STATUS" == "UP" ]; 
 			then	
