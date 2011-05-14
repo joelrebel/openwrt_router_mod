@@ -31,10 +31,10 @@ powercut_flag_check() {
 
 }
 
-checkrun_atom_ppp() {
+checkrun_homeserver_ppp() {
 	if [ ! $PPP_PID ];
 	then
-		logline info "->running pppoe start on atom<-"
+		logline info "->running pppoe start on homeserver<-"
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "pidof pppd >/tmp/pppoe.pid"
 		/usr/bin/scp -P2222 -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP}:/tmp/pppoe.pid /tmp/pppoe.pid
 		PPP_PID=$(cat /tmp/pppoe.pid)
@@ -45,34 +45,34 @@ checkrun_atom_ppp() {
 		logline info "pppd active at $PPP_PID on ${HOMESERVER_IP}"
 	fi	
 }
-turn_atom_off() {
-	logline info "->turn_atom_off<-"
+turn_homeserver_off() {
+	logline info "->turn_homeserver_off<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/opt/server_scripts/do_hibernate.sh"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/opt/server_scripts/do_suspend.sh"
 }
 
 #confusing name for the fucntion :s
 
-turn_atom_normal() {
-	logline info "->turn_atom_normal<-"
+turn_homeserver_normal() {
+	logline info "->turn_homeserver_normal<-"
 	PPP_PID=''
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $HOMESERVER_GATEWAY_INTF down"
 	if [ "$1" == "poweroff" ];
 	then
-		turn_atom_off
+		turn_homeserver_off
 	fi	
 }
 
-turn_atom_gateway() {
+turn_homeserver_gateway() {
 	if [ "$MY_STATUS" == "GATEWAY" ];
 	then
 		logline error "WTF MY_STATUS -> $MY_STATUS, im not letting a splitbrain!" 
 	else 
-		logline info "->turn_atom_gateway<-"
+		logline info "->turn_homeserver_gateway<-"
 		PPP_PID=''
 		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "ifconfig $HOMESERVER_GATEWAY_INTF $GATEWAY_IP"
 		sleep 5
-		checkrun_atom_ppp
+		checkrun_homeserver_ppp
 	fi	
 }
 

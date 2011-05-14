@@ -10,14 +10,14 @@
 #1) Power resumed/ Powered up
 #                                            
 #       1) boot using normal ip (192.168.0.4)                            
-#       2) check if atom server is up - ping alternate ip (192.168.0.110)
+#       2) check if homeserver server is up - ping alternate ip (192.168.0.110)
 #               if down                 
 #                       bind 192.168.0.1            
-#                       start atom_boot_timer script
+#                       start homeserver_boot_timer script
 #                       send /usr/bin/wol end of timer script
 #            
 #2) Power cut                                                      
-#       1) check if atom server is up, run halt on the server if up
+#       1) check if homeserver server is up, run halt on the server if up
 #       3) turn self into gateway
 #
 #router will have secondary ip with  br-lan:1 
@@ -25,6 +25,7 @@
 
 export HOME=/root #added for dropbears scp
 
+rm -f /etc/itxscripts/pppd.log
 LOG_LEVEL='0' 
 LOG_FILE=/etc/itxscripts/gateway_controller.log
 > $LOG_FILE
@@ -95,7 +96,7 @@ do
 		powerresume_flag_check
 		POWERCUT_FLAG_COUNT=0; # since power is present, resetting flag to 0	
 		
-		if [ "$MY_STATUS" == "NORMAL" ]; # Router isnt the gateway and power is present we need to ensure atom is gateway
+		if [ "$MY_STATUS" == "NORMAL" ]; # Router isnt the gateway and power is present we need to ensure homeserver is gateway
 		then
 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS "
 		
@@ -128,7 +129,7 @@ do
 				then
 					logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MYSTATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS - but GATEWAY_STATUS -> $GATEWAY_STATUS :S"
 				fi #end if [ "$HOMESERVER_STATUS" == "DOWN" ];
-		 	elif [ "$HOMESERVER_STATUS" == "UP" ]; #HOMESERVER_IP reachable, ensure atom is the gateway - 
+		 	elif [ "$HOMESERVER_STATUS" == "UP" ]; #HOMESERVER_IP reachable, ensure homeserver is the gateway - 
 			then	
 		 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS"
 			
@@ -146,19 +147,19 @@ do
 					if [ "$TEMP" == "$GATEWAY_IP" ];
 			 		then
 			 			logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, HOMESERVER is GATEWAY \0/"
-						checkrun_atom_ppp
+						checkrun_homeserver_ppp
 					 else 
 			 			logline error "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS TEMP -> $TEMP, HOMESERVER is NOT the GATEWAY :S"
 				 	fi
 		        
 				elif [ "$GATEWAY_STATUS" == "DOWN" ];
 		 		then
-					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, Turning atom into gateway .."
-					turn_atom_gateway
+					logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS, Turning homeserver into gateway .."
+					turn_homeserver_gateway
 				fi
 			
 			fi #end HOMESERVER_STATUS UP
-		elif [ "$MY_STATUS" == "GATEWAY" ]; #Power is present, router is the gateway - we need to check and turn atom into the gateway
+		elif [ "$MY_STATUS" == "GATEWAY" ]; #Power is present, router is the gateway - we need to check and turn homeserver into the gateway
 		then	
 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS"
 		
@@ -179,12 +180,12 @@ do
 					
 	 		   	fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 				#end HOMESERVER_STATUS DOWN
-		 	elif [ "$HOMESERVER_STATUS" == "UP" ]; #HOMESERVER_IP UP, ensure atom is the gateway - 
+		 	elif [ "$HOMESERVER_STATUS" == "UP" ]; #HOMESERVER_IP UP, ensure homeserver is the gateway - 
 			then	
 				POWERRESUME_FLAG_COUNT=0
 		 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS"
 				turn_self_normal
-				turn_atom_gateway
+				turn_homeserver_gateway
 				fi #end HOMESERVER_IP reachable
 			fi	
 ################################POWER OFF###############################################
@@ -214,10 +215,10 @@ do
 	 		then	
 
 	 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS"
-				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
+				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check homeserver, gateway - initiate turn_gateway 
 				then	
 					POWERCUT_FLAG_COUNT=0
-					turn_atom_normal poweroff
+					turn_homeserver_normal poweroff
 					if [ "$GATEWAY_STATUS" == "UP" ]; # 
 	        			then
                                			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS,  GATEWAY_STATUS -> $GATEWAY_STATUS"
@@ -230,11 +231,11 @@ do
 					logline info "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT needs to hit $POWERCUT_FLAG_MAXCOUNT"	
 					if [ "$GATEWAY_STATUS" == "DOWN" ];
                                         then
-                                               turn_atom_gateway #atom can run as gateway untill its POWERCUT_FLAG_MAXCOUNT is reached
+                                               turn_homeserver_gateway #homeserver can run as gateway untill its POWERCUT_FLAG_MAXCOUNT is reached
                                         fi
 				fi
 			fi #end HOMESERVER_IP reachable
-		elif [ "$MY_STATUS" == "GATEWAY" ]; #Power is out, need to ensure atom is down
+		elif [ "$MY_STATUS" == "GATEWAY" ]; #Power is out, need to ensure homeserver is down
 		then	
 			logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS"
 			
@@ -245,10 +246,10 @@ do
 	 		elif [ "$HOMESERVER_STATUS" == "UP" ]; 
 			then	
 		 		logline info "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS"
-				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check atom, gateway - initiate turn_gateway 
+				if [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT  ]]; #POWERCUT_FLAG_MAXCOUNT hit, we check homeserver, gateway - initiate turn_gateway 
 				then
 					POWERCUT_FLAG_COUNT=0
-					turn_atom_normal poweroff
+					turn_homeserver_normal poweroff
 				else
 					logline info "POWERCUT_FLAG_COUNT -> $POWERCUT_FLAG_COUNT needs to hit $POWERCUT_FLAG_MAXCOUNT"	
 				fi	
