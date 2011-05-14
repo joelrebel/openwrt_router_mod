@@ -136,6 +136,14 @@ turn_self_normal() {
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
 }
 
+check_my_uptime() {
+	
+	UPTIME=$(cat /proc/uptime);
+	if [[ $UPTIME -gt 172800 ]];
+	then
+		/sbin/reboot
+	fi
+}
 
 check_mystatus() {
 	

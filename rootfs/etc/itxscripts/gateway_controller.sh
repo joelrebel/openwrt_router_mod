@@ -62,6 +62,7 @@ cp  /etc/itxscripts/known_hosts /root/.ssh/
 
 while [[ 1 ]];
 do	
+	check_my_uptime	
 	check_mystatus #returns NORMAL|GATEWAY
 	logline debug "MY_STATUS-> $MY_STATUS"
 	if [ "$MY_STATUS" == "NORMAL" ];
