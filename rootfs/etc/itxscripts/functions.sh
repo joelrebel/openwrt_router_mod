@@ -35,20 +35,20 @@ checkrun_atom_ppp() {
 	if [ ! $PPP_PID ];
 	then
 		logline info "->running pppoe start on atom<-"
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "pidof pppd >/tmp/pppoe.pid"
-		/usr/bin/scp -P2222 -i /etc/itxscripts/id_rsa root@${ATOM_IP}:/tmp/pppoe.pid /tmp/pppoe.pid
+		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "pidof pppd >/tmp/pppoe.pid"
+		/usr/bin/scp -P2222 -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP}:/tmp/pppoe.pid /tmp/pppoe.pid
 		PPP_PID=$(cat /tmp/pppoe.pid)
 
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "nohup /usr/sbin/pppoe-start"
+		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "nohup /usr/sbin/pppoe-start"
 
 	else 
-		logline info "pppd active at $PPP_PID on ${ATOM_IP}"
+		logline info "pppd active at $PPP_PID on ${HOMESERVER_IP}"
 	fi	
 }
 turn_atom_off() {
 	logline info "->turn_atom_off<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/opt/server_scripts/do_hibernate.sh"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/opt/server_scripts/do_hibernate.sh"
 }
 
 #confusing name for the fucntion :s
@@ -56,7 +56,7 @@ turn_atom_off() {
 turn_atom_normal() {
 	logline info "->turn_atom_normal<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $ATOM_GATEWAY_INTF down"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $HOMESERVER_GATEWAY_INTF down"
 	if [ "$1" == "poweroff" ];
 	then
 		turn_atom_off
@@ -70,7 +70,7 @@ turn_atom_gateway() {
 	else 
 		logline info "->turn_atom_gateway<-"
 		PPP_PID=''
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${ATOM_IP} -p2222 "ifconfig $ATOM_GATEWAY_INTF $GATEWAY_IP"
+		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "ifconfig $HOMESERVER_GATEWAY_INTF $GATEWAY_IP"
 		sleep 5
 		checkrun_atom_ppp
 	fi	
