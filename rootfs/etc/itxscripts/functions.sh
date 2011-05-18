@@ -56,7 +56,10 @@ turn_homeserver_off() {
 turn_homeserver_normal() {
 	logline info "->turn_homeserver_normal<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/usr/sbin/pppoe-stop; ifconfig $HOMESERVER_GATEWAY_INTF down"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/usr/sbin/pppoe-stop; \
+										ifconfig $HOMESERVER_GATEWAY_INTF 0.0.0.0 down; \
+										ifconfig $HOMESERVER_GATEWAY_INTF hw ether $HOMESERVER_MAC \
+										ifconfig $HOMESERVER_SECONDARY_INTF down"
 	if [ "$1" == "poweroff" ];
 	then
 		turn_homeserver_off
@@ -70,7 +73,10 @@ turn_homeserver_gateway() {
 	else 
 		logline info "->turn_homeserver_gateway<-"
 		PPP_PID=''
-		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "ifconfig $HOMESERVER_GATEWAY_INTF $GATEWAY_IP"
+		/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "ifconfig $HOMESERVER_GATEWAY_INTF 0.0.0.0 down; \
+											ifconfig $HOMESERVER_GATEWAY_INTF hw ether $FLOATING_MAC; \
+											ifconfig $HOMESERVER_GATEWAY_INTF $GATEWAY_IP up; \
+											ifconfig $HOMESERVER_SECONDARY_INTF $HOMESERVER_IP up"
 		sleep 5
 		checkrun_homeserver_ppp
 	fi	
@@ -86,8 +92,8 @@ check_run_pppd() {
 	then	
 
 		logline into "->pppd connect<-"
-	 	/usr/sbin/pppd plugin rp-pppoe.so br-lan noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user slrebello password sallu199 lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
-
+	 	/usr/sbin/pppd plugin rp-pppoe.so $MY_GATEWAY_INTF noipdefault noauth default-asyncmap defaultroute hide-password nodetach mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user $PPP_USER password $PPP_PASS lcp-echo-interval 20 lcp-echo-failure 3 maxfail 10 logfile /etc/itxscripts/pppd.log debug &
+	
 	fi
 
 }
@@ -95,10 +101,12 @@ check_run_pppd() {
 turn_self_gateway() { 
 
 	logline info "->turn_self_gateway<-"
-
+	
+	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
+	ifconfig $MY_GATEWAY_INTF hw ether $FLOATING_MAC
 	ifconfig $MY_GATEWAY_INTF $GATEWAY_IP up
 	ifconfig $MY_SECONDARY_INTF $MY_IP up
-	check_run_pppd	
+	check_run_pppd
 
 	echo -e 'nameserver 208.67.220.220\nnameserver 8.8.8.8' >/etc/resolv.conf	
 		
@@ -109,6 +117,7 @@ turn_self_gateway() {
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
+	MYSTATUS=GATEWAY
 
 }
 
@@ -122,9 +131,11 @@ turn_self_normal() {
 	then
 		kill -s SIGTERM $MYPPP_PID
 	fi
+	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
+	ifconfig $MY_GATEWAY_INTF hw ether $MY_MAC
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
-	ifconfig  $MY_SECONDARY_INTF down
-	MY_STATUS=NORMAL
+	ifconfig $MY_SECONDARY_INTF down
+
 
 	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
 	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.66 -j MASQUERADE
@@ -134,6 +145,7 @@ turn_self_normal() {
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
+	MY_STATUS=NORMAL
 }
 
 check_my_uptime() {

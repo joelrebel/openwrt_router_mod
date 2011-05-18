@@ -34,16 +34,26 @@ LOG_FILE=/etc/itxscripts/gateway_controller.log
 # 2 - error  + info  + debug logs
 LOOP_INTERVAL=5 # in seconds
 WOL_SENT_COUNT=0;
-HOMESERVER_MAC="1c:6f:65:92:70:0b"
-
-MY_IP='192.168.0.4'
-MY_SECONDARY_INTF='br-lan:1' #swaps ips with gateway
-MY_GATEWAY_INTF='br-lan' #brwlan
-
-HOMESERVER_IP='192.168.0.110'
-HOMESERVER_GATEWAY_INTF='eth0:1'
 
 GATEWAY_IP='192.168.0.1'
+FLOATING_MAC='00:66:de:ad:be:ef'
+
+PPP_USER='joelr'
+PPP_PASS='instanet'
+MY_MAC='00:16:01:92:0A:90'
+MY_IP='192.168.0.4'
+MY_GATEWAY_INTF='br-lan' #brwlan
+MY_SECONDARY_INTF='br-lan:1' #swaps ips with gateway
+
+
+
+
+HOMESERVER_MAC="1c:6f:65:92:70:0b"
+HOMESERVER_IP='192.168.0.110'
+HOMESERVER_GATEWAY_INTF='eth0'
+HOMESERVER_SECONDARY_INTF='eth0:1'
+
+
 
 POWERCUT_FLAG_COUNT=0;
 POWERCUT_FLAG_MAXCOUNT=36; #36 -default $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
@@ -111,7 +121,7 @@ do
 		
 					if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 					then	
-						POWERRESUME_FLAG_COUNT=0
+	 					POWERRESUME_FLAG_COUNT=0
 						logline info "Running /usr/bin/wol on $HOMESERVER_IP"
 						/usr/bin/wol -i 192.168.0.255 $HOMESERVER_MAC
 						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
