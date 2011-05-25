@@ -58,8 +58,9 @@ turn_homeserver_normal() {
 	PPP_PID=''
 	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/usr/sbin/pppoe-stop; \
 										ifconfig $HOMESERVER_GATEWAY_INTF 0.0.0.0 down; \
-										ifconfig $HOMESERVER_GATEWAY_INTF hw ether $HOMESERVER_MAC \
-										ifconfig $HOMESERVER_SECONDARY_INTF down"
+										ifconfig $HOMESERVER_GATEWAY_INTF hw ether $HOMESERVER_MAC; \
+										ifconfig $HOMESERVER_SECONDARY_INTF $HOMESERVER_IP down; \
+										ifconfig $HOMESERVER_GATEWAY_INTF $HOMESERVER_IP up"
 	if [ "$1" == "poweroff" ];
 	then
 		turn_homeserver_off
@@ -132,9 +133,10 @@ turn_self_normal() {
 		kill -s SIGTERM $MYPPP_PID
 	fi
 	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
+	ifconfig $MY_SECONDARY_INTF $MY_IP down
 	ifconfig $MY_GATEWAY_INTF hw ether $MY_MAC
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
-	ifconfig $MY_SECONDARY_INTF down
+
 
 
 	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
@@ -150,7 +152,7 @@ turn_self_normal() {
 
 check_my_uptime() {
 	
-	UPTIME=$(cat /proc/uptime);
+	UPTIME=$(cat /proc/uptime | awk -F . '{print $1}');
 	if [[ $UPTIME -gt 172800 ]];
 	then
 		/sbin/reboot
