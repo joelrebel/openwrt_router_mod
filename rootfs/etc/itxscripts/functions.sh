@@ -45,11 +45,24 @@ checkrun_homeserver_ppp() {
 		logline info "pppd active at $PPP_PID on ${HOMESERVER_IP}"
 	fi	
 }
+
+
+#power_off_server() {
+#        echo 1 >/proc/diag/led/ses
+#        sleep 5
+#        echo 0 >/proc/diag/led/ses
+
+#}
+	
 turn_homeserver_on() {
 
 	if [ "$1" == "powerswitch" ];
 	then
-				
+	        echo 1 >/proc/diag/led/bridge #light up bridge led to indicate we're attempting to power up the server  
+        	echo 1 >/proc/diag/led/ses
+        	sleep 1
+        	echo 0 >/proc/diag/led/ses
+        	echo 0 >/proc/diag/led/bridge
 	else
 		logline info "Running /usr/bin/wol on $HOMESERVER_IP"
 		/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
@@ -179,21 +192,11 @@ check_mystatus() {
 	if [ "$MY_CURRENT_IP" ==  "$MY_IP" ];
 	then
 		MY_STATUS=NORMAL
-		SES_LED=$(cat /proc/diag/led/ses)
- 		if [[ $SES_LED -eq 1 ]];
-		then
-			echo 0 >/proc/diag/led/ses
-		fi
 		return 3
 
 	elif [ "$MY_CURRENT_IP" ==  "$GATEWAY_IP" ];
 	then
 		MY_STATUS=GATEWAY
-		SES_LED=$(cat /proc/diag/led/ses)
- 		if [[ $SES_LED -eq 0 ]];
-		then
-			echo 1 >/proc/diag/led/ses
-		fi
 		return 2
 	fi
 }
