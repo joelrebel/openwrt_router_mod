@@ -9,10 +9,10 @@
 #                            
 #1) Power resumed/ Powered up
 #                                            
-#       1) boot using normal ip (192.168.0.4)                            
-#       2) check if homeserver server is up - ping alternate ip (192.168.0.110)
+#       1) boot using normal ip (192.168.69.4)                            
+#       2) check if homeserver server is up - ping alternate ip (192.168.69.110)
 #               if down                 
-#                       bind 192.168.0.1            
+#                       bind 192.168.69.1            
 #                       start homeserver_boot_timer script
 #                       send /usr/bin/wol end of timer script
 #            
@@ -35,13 +35,13 @@ LOG_FILE=/etc/itxscripts/gateway_controller.log
 LOOP_INTERVAL=5 # in seconds
 WOL_SENT_COUNT=0;
 
-GATEWAY_IP='192.168.0.1'
+GATEWAY_IP='192.168.69.1'
 FLOATING_MAC='00:66:de:ad:be:ef'
 
 PPP_USER='joelr'
 PPP_PASS='instanet'
 MY_MAC='00:16:01:92:0A:90'
-MY_IP='192.168.0.4'
+MY_IP='192.168.69.4'
 MY_GATEWAY_INTF='br-lan' #brwlan
 MY_SECONDARY_INTF='br-lan:1' #swaps ips with gateway
 
@@ -49,7 +49,7 @@ MY_SECONDARY_INTF='br-lan:1' #swaps ips with gateway
 
 
 HOMESERVER_MAC="1c:6f:65:92:70:0b"
-HOMESERVER_IP='192.168.0.110'
+HOMESERVER_IP='192.168.69.110'
 HOMESERVER_GATEWAY_INTF='eth0'
 HOMESERVER_SECONDARY_INTF='eth0:1'
 
@@ -123,7 +123,7 @@ do
 					then	
 	 					POWERRESUME_FLAG_COUNT=0
 						logline info "Running /usr/bin/wol on $HOMESERVER_IP"
-						/usr/bin/wol -i 192.168.0.255 $HOMESERVER_MAC
+						/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
 						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 						logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
 						if [[ $WOL_SENT_COUNT -eq 15 ]];
@@ -149,7 +149,7 @@ do
                                		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS, GATEWAY_STATUS -> $GATEWAY_STATUS"
 					#Hit two bugs at this point 
 					#- piping|redirecting  dropbear ssh output just doesnt work in non-interactive env
-					#- dropbear scp doesnt seem to honour ssh options like scp -P2222 -oStrictHostKeyChecking=no   root@192.168.0.133:/tmp/test1234 .
+					#- dropbear scp doesnt seem to honour ssh options like scp -P2222 -oStrictHostKeyChecking=no   root@192.168.69.133:/tmp/test1234 .
 					#- hence doing the below :s
 					/usr/bin/ssh -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "ifconfig $HOMESERVER_GATEWAY_INTF >/tmp/intf"
 					/usr/bin/scp -P2222 -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP}:/tmp/intf /tmp/intf
@@ -182,7 +182,7 @@ do
 				then	
 					POWERRESUME_FLAG_COUNT=0		
 					logline debug "Running /usr/bin/wol on $HOMESERVER_IP"
-					/usr/bin/wol -i 192.168.0.255 $HOMESERVER_MAC
+					/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
 					WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
 				else

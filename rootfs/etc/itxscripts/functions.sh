@@ -84,8 +84,8 @@ turn_homeserver_gateway() {
 }
 
 #IPs are swapped between interfaces
-#br-lan turns 192.168.0.1
-#br-lan:1 turns 192.168.0.4
+#br-lan turns 192.168.69.1
+#br-lan:1 turns 192.168.69.4
 check_run_pppd() {
 
 	PPID=$(pidof pppd)
@@ -111,13 +111,13 @@ turn_self_gateway() {
 
 	echo -e 'nameserver 208.67.220.220\nnameserver 8.8.8.8' >/etc/resolv.conf	
 		
-	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
-	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.66 -j MASQUERADE
-	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.0.88 -j MASQUERADE
+	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.69.98 -j MASQUERADE
+	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.69.66 -j MASQUERADE
+	/usr/sbin/iptables -t nat -A POSTROUTING -o ppp0 -s 192.168.69.88 -j MASQUERADE
 
-	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
-	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
-	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.98 -j ACCEPT
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.66 -j ACCEPT
+	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.88 -j ACCEPT
 	MYSTATUS=GATEWAY
 
 }
@@ -139,14 +139,14 @@ turn_self_normal() {
 
 
 
-	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.98 -j MASQUERADE
-	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.66 -j MASQUERADE
-	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.0.88 -j MASQUERADE
+	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.69.98 -j MASQUERADE
+	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.69.66 -j MASQUERADE
+	/usr/sbin/iptables -t nat -D POSTROUTING -o ppp0 -s 192.168.69.88 -j MASQUERADE
 
 
-	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.98 -j ACCEPT
-	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.66 -j ACCEPT
-	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.0.88 -j ACCEPT
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.98 -j ACCEPT
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.66 -j ACCEPT
+	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.88 -j ACCEPT
 	MY_STATUS=NORMAL
 }
 
