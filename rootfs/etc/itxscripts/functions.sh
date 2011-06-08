@@ -66,6 +66,8 @@ turn_homeserver_on() {
 	else
 		logline info "Running /usr/bin/wol on $HOMESERVER_IP"
 		/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
+		/usr/bin/wol -i 192.168.69.255 $FLOATING_MAC # needed since sometimes box goes down with this mac
+
 		WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
 	fi	
