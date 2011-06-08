@@ -45,6 +45,19 @@ checkrun_homeserver_ppp() {
 		logline info "pppd active at $PPP_PID on ${HOMESERVER_IP}"
 	fi	
 }
+turn_homeserver_on() {
+
+	if [ "$1" == "powerswitch" ];
+	then
+				
+	else
+		logline info "Running /usr/bin/wol on $HOMESERVER_IP"
+		/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
+		WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
+		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
+	fi	
+}
+
 turn_homeserver_off() {
 	logline info "->turn_homeserver_off<-"
 	PPP_PID=''

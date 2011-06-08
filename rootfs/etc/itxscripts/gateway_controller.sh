@@ -121,17 +121,16 @@ do
 		
 					if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 					then	
-	 					POWERRESUME_FLAG_COUNT=0
-						logline info "Running /usr/bin/wol on $HOMESERVER_IP"
-						/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
-						WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
-						logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
-						if [[ $WOL_SENT_COUNT -eq 15 ]];
+						turn_on_homeserver
+						if [[ $WOL_SENT_COUNT -eq 5 ]];
 						then
-							logline error "WOL_SENT_COUNT -> 15, something wrong with the HOMESERVER Server??"
+							logline error "WOL_SENT_COUNT -> 5, HOMESERVER hasn't responded to Wake On Lan, attempting powerswitch"
+							turn_on_homeserver powerswitch
+							WOL_SENT_COUNT=0
+	 						POWERRESUME_FLAG_COUNT=0 ##resetting flag once the server may be powered up
 						fi
 					else
-						logline debug "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
+						logline debug "turn_on_homeserver skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 						turn_self_gateway
 				
 	 		   		fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
@@ -180,14 +179,19 @@ do
 		
 				if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 				then	
-					POWERRESUME_FLAG_COUNT=0		
-					logline debug "Running /usr/bin/wol on $HOMESERVER_IP"
-					/usr/bin/wol -i 192.168.69.255 $HOMESERVER_MAC
-					WOL_SENT_COUNT=$(( $WOL_SENT_COUNT + 1 ))
-					logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, WOL_SENT_COUNT -> $WOL_SENT_COUNT"
+					POWERRESUME_FLAG_COUNT=0
+
+					turn_on_homeserver
+					if [[ $WOL_SENT_COUNT -eq 5 ]];
+					then
+						logline error "WOL_SENT_COUNT -> 5, HOMESERVER hasn't responded to Wake On Lan, attempting powerswitch"
+						turn_on_homeserver powerswitch
+						WOL_SENT_COUNT=0
+	 					POWERRESUME_FLAG_COUNT=0 ##resetting flag once the server may be powered up
+					fi
 				else
 					check_run_pppd
-					logline info "wol skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
+					logline info "turn_on_homeserver skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 					
 	 		   	fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 				#end HOMESERVER_STATUS DOWN
