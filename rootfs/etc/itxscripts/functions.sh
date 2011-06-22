@@ -76,7 +76,7 @@ turn_homeserver_on() {
 turn_homeserver_off() {
 	logline info "->turn_homeserver_off<-"
 	PPP_PID=''
-	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/opt/server_scripts/do_suspend.sh"
+	/usr/bin/ssh -y -i /etc/itxscripts/id_rsa root@${HOMESERVER_IP} -p2222 "/opt/server_scripts/do_suspend.sh" &
 }
 
 #confusing name for the fucntion :s
