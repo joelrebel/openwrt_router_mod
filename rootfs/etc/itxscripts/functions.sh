@@ -5,6 +5,13 @@
 # Timestamp needs to be added for each logline
 powerresume_flag_check() {
 		
+
+		if [ -f $POWERON_FLAG ]; ## Many times I need to power off/on the box asap .. this helps
+		then
+			POWERRESUME_FLAG_COUNT=$POWERRESUME_FLAG_MAXCOUNT
+			rm -f $POWEROFF_FLAG
+		fi	
+
 		if [[ $POWERRESUME_FLAG_COUNT -lt $POWERRESUME_FLAG_MAXCOUNT ]];		
 		then
 			POWERRESUME_FLAG_COUNT=$(( $POWERRESUME_FLAG_COUNT + 1 ))
@@ -18,14 +25,23 @@ powerresume_flag_check() {
 }
 
 powercut_flag_check() {
+	
+		
+		if [ -f $POWEROFF_FLAG ]; ## Many times I need to power off/on the box asap .. this helps
+		then
+			POWERCUT_FLAG_COUNT=$POWERCUT_FLAG_MAXCOUNT
+			rm -f $POWEROFF_FLAG
+		fi	
+
 		if [[ $POWERCUT_FLAG_COUNT -lt $POWERCUT_FLAG_MAXCOUNT ]];		
 		then
 			POWERCUT_FLAG_COUNT=$(( $POWERCUT_FLAG_COUNT + 1 ))
 			return $POWERCUT_FLAG_COUNT #max count not yet reached
-	
+		
 		elif [[ $POWERCUT_FLAG_COUNT -eq $POWERCUT_FLAG_MAXCOUNT ]]; #12 * LOOP_INTERVAL = 60 secs/ 1min 
 		then
 			return 0 #max count reached
+
 			
 		fi
 

@@ -26,6 +26,13 @@
 export HOME=/root #added for dropbears scp
 
 rm -f /etc/itxscripts/pppd.log
+
+POWEROFF_FLAG='/etc/itxscripts/poweroff.flag'
+POWERON_FLAG='/etc/itxscripts/poweron.flag'
+
+rm -f $POWEROFF_FLAG
+rm -f $POWERON_FLAG
+
 LOG_LEVEL='0' 
 LOG_FILE=/etc/itxscripts/gateway_controller.log
 > $LOG_FILE
