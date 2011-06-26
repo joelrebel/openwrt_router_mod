@@ -121,16 +121,16 @@ do
 		
 					if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 					then	
-						turn_on_homeserver
+						turn_homeserver_on
 						if [[ $WOL_SENT_COUNT -eq 5 ]];
 						then
 							logline error "WOL_SENT_COUNT -> 5, HOMESERVER hasn't responded to Wake On Lan, attempting powerswitch"
-							turn_on_homeserver powerswitch
+							turn_homeserver_on powerswitch
 							WOL_SENT_COUNT=0
 	 						POWERRESUME_FLAG_COUNT=0 ##resetting flag once the server may be powered up
 						fi
 					else
-						logline debug "turn_on_homeserver skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
+						logline debug "turn_homeserver_on skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 						turn_self_gateway
 				
 	 		   		fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
@@ -181,17 +181,17 @@ do
 				then	
 					POWERRESUME_FLAG_COUNT=0
 
-					turn_on_homeserver
+					turn_homeserver_on
 					if [[ $WOL_SENT_COUNT -eq 5 ]];
 					then
 						logline error "WOL_SENT_COUNT -> 5, HOMESERVER hasn't responded to Wake On Lan, attempting powerswitch"
-						turn_on_homeserver powerswitch
+						turn_homeserver_on powerswitch
 						WOL_SENT_COUNT=0
 	 					POWERRESUME_FLAG_COUNT=0 ##resetting flag once the server may be powered up
 					fi
 				else
 					check_run_pppd
-					logline info "turn_on_homeserver skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
+					logline info "turn_homeserver_on skipped, POWERRESUME_FLAG_COUNT - $POWERRESUME_FLAG_COUNT needs to hit $POWERRESUME_FLAG_MAXCOUNT"
 					
 	 		   	fi ##	 if [[ $POWERRESUME_FLAG_COUNT -eq $POWERRESUME_FLAG_MAXCOUNT ]];
 				#end HOMESERVER_STATUS DOWN
