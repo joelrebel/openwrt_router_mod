@@ -9,7 +9,7 @@ powerresume_flag_check() {
 		if [ -f $POWERON_FLAG ]; ## Many times I need to power off/on the box asap .. this helps
 		then
 			POWERRESUME_FLAG_COUNT=$POWERRESUME_FLAG_MAXCOUNT
-			rm -f $POWEROFF_FLAG
+			rm -f $POWERON_FLAG
 		fi	
 
 		if [[ $POWERRESUME_FLAG_COUNT -lt $POWERRESUME_FLAG_MAXCOUNT ]];		
