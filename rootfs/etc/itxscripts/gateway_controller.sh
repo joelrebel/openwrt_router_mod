@@ -63,7 +63,7 @@ HOMESERVER_SECONDARY_INTF='eth0:1'
 
 
 POWERCUT_FLAG_COUNT=0;
-POWERCUT_FLAG_MAXCOUNT=36; #36 -default $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
+POWERCUT_FLAG_MAXCOUNT=13; #36 -default $POWERCUT_FLAG_COUNT * LOOP_INTERVAL = number of seconds the script would wait to take action on the router..
 			   # once the script hits maxcount, we run halt	
 
 POWERRESUME_FLAG_COUNT=0;
