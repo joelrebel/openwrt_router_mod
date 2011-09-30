@@ -148,7 +148,7 @@ turn_self_gateway() {
 	logline info "->turn_self_gateway<-"
 	
 	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
-	ifconfig $MY_GATEWAY_INTF hw ether $FLOATING_MAC
+	#ifconfig $MY_GATEWAY_INTF hw ether $FLOATING_MAC
 	ifconfig $MY_GATEWAY_INTF $GATEWAY_IP up
 	ifconfig $MY_SECONDARY_INTF $MY_IP up
 	check_run_pppd
@@ -178,7 +178,7 @@ turn_self_normal() {
 	fi
 	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
 	ifconfig $MY_SECONDARY_INTF $MY_IP down
-	ifconfig $MY_GATEWAY_INTF hw ether $MY_MAC
+	#ifconfig $MY_GATEWAY_INTF hw ether $MY_MAC
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
 
 
