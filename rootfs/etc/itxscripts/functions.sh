@@ -143,12 +143,45 @@ check_run_pppd() {
 
 }
 
+mod_bridge_intf() {
+	#bridge interfaces can swap macs (and work fine) only with the macs on the bridged interfaces.	
+	if [ "$1" == 'del_bridge' ];
+	then
+		ifconfig ${MY_LAN_INTF}.0 down
+		ifconfig $MY_LAN_INTF down
+		ifconfig $MY_WIFI_INTF down
+		ifconfig $MY_GATEWAY_INTF down
+		brctl delif $MY_GATEWAY_INTF $MY_LAN_INTF
+		brctl delif $MY_GATEWAY_INTF $MY_WIFI_INTF
+		brctl delbr $MY_GATEWAY_INTF
+	fi
+	
+	if [ "$1" == 'add_bridge' ];
+	then
+		
+		ifconfig ${MY_LAN_INTF}.0 up
+		ifconfig $MY_LAN_INTF up
+		ifconfig $MY_WIFI_INTF up
+		brctl addbr $MY_GATEWAY_INTF
+		brctl addif $MY_GATEWAY_INTF $MY_LAN_INTF
+		brctl addif $MY_GATEWAY_INTF $MY_WIFI_INTF
+		ifconfig $MY_GATEWAY_INTF up
+	fi
+	
+	if [ "$1" == 'swap_hwaddr' ]; ##needs to be passed a mac addr to swap with
+	then
+		mod_bridge_intf del_bridge
+		ifconfig $MY_LAN_INTF hw ether $2
+		mod_bridge_intf add_bridge
+	fi
+
+}
+
 turn_self_gateway() { 
 
 	logline info "->turn_self_gateway<-"
-	
 	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
-	#ifconfig $MY_GATEWAY_INTF hw ether $FLOATING_MAC
+	mod_bridge_intf swap_hwaddr $FLOATING_MAC
 	ifconfig $MY_GATEWAY_INTF $GATEWAY_IP up
 	ifconfig $MY_SECONDARY_INTF $MY_IP up
 	check_run_pppd
@@ -178,7 +211,7 @@ turn_self_normal() {
 	fi
 	ifconfig $MY_GATEWAY_INTF 0.0.0.0 down
 	ifconfig $MY_SECONDARY_INTF $MY_IP down
-	#ifconfig $MY_GATEWAY_INTF hw ether $MY_MAC
+	mod_bridge_intf swap_hwaddr $MY_MAC
 	ifconfig $MY_GATEWAY_INTF $MY_IP up
 
 

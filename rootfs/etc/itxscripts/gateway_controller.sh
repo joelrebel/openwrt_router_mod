@@ -49,6 +49,8 @@ PPP_USER='joelr'
 PPP_PASS='instanet'
 MY_MAC='00:16:01:92:0A:90'
 MY_IP='192.168.69.4'
+MY_LAN_INTF='eth0'
+MY_WIFI_INTF='wl0'
 MY_GATEWAY_INTF='br-lan' #brwlan
 MY_SECONDARY_INTF='br-lan:1' #swaps ips with gateway
 
