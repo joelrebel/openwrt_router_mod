@@ -210,8 +210,8 @@ do
 		 		logline debug "POWER_STATUS -> $POWER_STATUS, MY_STATUS -> $MY_STATUS, HOMESERVER_STATUS -> $HOMESERVER_STATUS"
 				turn_self_normal
 				turn_homeserver_gateway
-				fi #end HOMESERVER_IP reachable
-			fi	
+			fi #end HOMESERVER_IP reachable
+		fi	
 ################################POWER OFF###############################################
 	elif [ "$POWER_STATUS" == "OFF" ]; #GPIO indicates power is OFF
 	then

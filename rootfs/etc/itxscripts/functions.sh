@@ -151,7 +151,7 @@ mod_bridge_intf() {
 		ifconfig $MY_LAN_INTF down
 		ifconfig $MY_WIFI_INTF down
 		ifconfig $MY_GATEWAY_INTF down
-		brctl delif $MY_GATEWAY_INTF $MY_LAN_INTF
+		brctl delif $MY_GATEWAY_INTF ${MY_LAN_INTF}.0
 		brctl delif $MY_GATEWAY_INTF $MY_WIFI_INTF
 		brctl delbr $MY_GATEWAY_INTF
 	fi
@@ -163,16 +163,20 @@ mod_bridge_intf() {
 		ifconfig $MY_LAN_INTF up
 		ifconfig $MY_WIFI_INTF up
 		brctl addbr $MY_GATEWAY_INTF
-		brctl addif $MY_GATEWAY_INTF $MY_LAN_INTF
+		brctl addif $MY_GATEWAY_INTF ${MY_LAN_INTF}.0
 		brctl addif $MY_GATEWAY_INTF $MY_WIFI_INTF
 		ifconfig $MY_GATEWAY_INTF up
+
 	fi
 	
 	if [ "$1" == 'swap_hwaddr' ]; ##needs to be passed a mac addr to swap with
 	then
+	
 		mod_bridge_intf del_bridge
-		ifconfig $MY_LAN_INTF hw ether $2
+		ifconfig ${MY_LAN_INTF}.0 hw ether $2
 		mod_bridge_intf add_bridge
+		ifconfig ${MY_GATEWAY_INTF} hw ether $2
+		sleep 10
 	fi
 
 }
@@ -195,7 +199,6 @@ turn_self_gateway() {
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.98 -j ACCEPT
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.66 -j ACCEPT
 	/usr/sbin/iptables -I zone_lan_REJECT -s 192.168.69.88 -j ACCEPT
-	MYSTATUS=GATEWAY
 
 }
 
@@ -224,7 +227,6 @@ turn_self_normal() {
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.98 -j ACCEPT
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.66 -j ACCEPT
 	/usr/sbin/iptables -D zone_lan_REJECT -s 192.168.69.88 -j ACCEPT
-	MY_STATUS=NORMAL
 }
 
 check_my_uptime() {
@@ -291,9 +293,6 @@ ping_check() {
 	while [[ $COUNT -ne 5 ]]
 	do	
 		/usr/bin/arping -c1 $TO_PING -w2 -I $MY_GATEWAY_INTF &>/dev/null
-		# returns 1 if sucess,
-		# returns 0 if fail
-		
 		if [[ $? -eq 0 ]];
 		then
 	     		PING_COUNT=$(( PING_COUNT + 1 ))
